@@ -19,3 +19,17 @@ func (e *DynaMock) ExpectGetItem() *GetItemExpectation {
 
 	return &e.GetItemExpect[len(e.GetItemExpect)-1]
 }
+
+func (e *DynaMock) ExpectBatchGetItem() *BatchGetItemExpectation {
+	batchGetItemExpect := BatchGetItemExpectation{input: nil}
+	e.BatchGetItemExpect = append(e.BatchGetItemExpect, batchGetItemExpect)
+
+	return &e.BatchGetItemExpect[len(e.BatchGetItemExpect)-1]
+}
+
+func (e *DynaMock) ExpectUpdateItem() *UpdateItemExpectation {
+	updateItemExpect := UpdateItemExpectation{attributeUpdates: nil, table: nil, key: nil}
+	e.UpdateItemExpect = append(e.UpdateItemExpect, updateItemExpect)
+
+	return &e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
+}
