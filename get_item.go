@@ -1,7 +1,9 @@
 package dynamock
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"reflect"
 )
 
 func (e *GetItemExpectation) ToTable(table string) *GetItemExpectation {
