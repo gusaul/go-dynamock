@@ -20,6 +20,7 @@ type (
 		BatchWriteItemExpect []BatchWriteItemExpectation
 		CreateTableExpect    []CreateTableExpectation
 		DescribeTableExpect  []DescribeTableExpectation
+		WaitTableExistExpect []WaitTableExistExpectation
 	}
 
 	GetItemExpectation struct {
@@ -66,6 +67,11 @@ type (
 	DescribeTableExpectation struct {
 		table  *string
 		output *dynamodb.DescribeTableOutput
+	}
+
+	WaitTableExistExpectation struct {
+		table *string
+		err   error
 	}
 
 	AnyValue struct{}

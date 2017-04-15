@@ -68,3 +68,10 @@ func (e *DynaMock) ExpectDescribeTable() *DescribeTableExpectation {
 
 	return &e.DescribeTableExpect[len(e.DescribeTableExpect)-1]
 }
+
+func (e *DynaMock) ExpectWaitTableExist() *WaitTableExistExpectation {
+	waitTableExistExpect := WaitTableExistExpectation{table: nil}
+	e.WaitTableExistExpect = append(e.WaitTableExistExpect, waitTableExistExpect)
+
+	return &e.WaitTableExistExpect[len(e.WaitTableExistExpect)-1]
+}
