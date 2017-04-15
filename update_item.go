@@ -21,7 +21,7 @@ func (e *UpdateItemExpectation) Updates(attrs map[string]*dynamodb.AttributeValu
 	return e
 }
 
-func (e *UpdateItemExpectation) ExpectReturns(res dynamodb.UpdateItemOutput) *UpdateItemExpectation {
+func (e *UpdateItemExpectation) WillReturns(res dynamodb.UpdateItemOutput) *UpdateItemExpectation {
 	e.output = &res
 	return e
 }
@@ -54,5 +54,5 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Get Item Expectation Not Found")
+	return nil, fmt.Errorf("Update Item Expectation Not Found")
 }

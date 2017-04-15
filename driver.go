@@ -33,3 +33,31 @@ func (e *DynaMock) ExpectUpdateItem() *UpdateItemExpectation {
 
 	return &e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
 }
+
+func (e *DynaMock) ExpectDeleteItem() *DeleteItemExpectation {
+	deleteItemExpect := DeleteItemExpectation{table: nil, key: nil}
+	e.DeleteItemExpect = append(e.DeleteItemExpect, deleteItemExpect)
+
+	return &e.DeleteItemExpect[len(e.DeleteItemExpect)-1]
+}
+
+func (e *DynaMock) ExpectBatchWriteItem() *BatchWriteItemExpectation {
+	batchWriteItemExpect := BatchWriteItemExpectation{input: nil}
+	e.BatchWriteItemExpect = append(e.BatchWriteItemExpect, batchWriteItemExpect)
+
+	return &e.BatchWriteItemExpect[len(e.BatchWriteItemExpect)-1]
+}
+
+func (e *DynaMock) ExpectCreateTable() *CreateTableExpectation {
+	createTableExpect := CreateTableExpectation{keySchema: nil, table: nil}
+	e.CreateTableExpect = append(e.CreateTableExpect, createTableExpect)
+
+	return &e.CreateTableExpect[len(e.CreateTableExpect)-1]
+}
+
+func (e *DynaMock) ExpectDescribeTable() *DescribeTableExpectation {
+	describeTableExpect := DescribeTableExpectation{table: nil}
+	e.DescribeTableExpect = append(e.DescribeTableExpect, describeTableExpect)
+
+	return &e.DescribeTableExpect[len(e.DescribeTableExpect)-1]
+}

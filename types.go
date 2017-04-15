@@ -12,9 +12,13 @@ type (
 	}
 
 	DynaMock struct {
-		GetItemExpect      []GetItemExpectation
-		BatchGetItemExpect []BatchGetItemExpectation
-		UpdateItemExpect   []UpdateItemExpectation
+		GetItemExpect        []GetItemExpectation
+		BatchGetItemExpect   []BatchGetItemExpectation
+		UpdateItemExpect     []UpdateItemExpectation
+		DeleteItemExpect     []DeleteItemExpectation
+		BatchWriteItemExpect []BatchWriteItemExpectation
+		CreateTableExpect    []CreateTableExpectation
+		DescribeTableExpect  []DescribeTableExpectation
 	}
 
 	GetItemExpectation struct {
@@ -33,6 +37,28 @@ type (
 		key              map[string]*dynamodb.AttributeValue
 		table            *string
 		output           *dynamodb.UpdateItemOutput
+	}
+
+	DeleteItemExpectation struct {
+		key    map[string]*dynamodb.AttributeValue
+		table  *string
+		output *dynamodb.DeleteItemOutput
+	}
+
+	BatchWriteItemExpectation struct {
+		input  map[string][]*dynamodb.WriteRequest
+		output *dynamodb.BatchWriteItemOutput
+	}
+
+	CreateTableExpectation struct {
+		keySchema []*dynamodb.KeySchemaElement
+		table     *string
+		output    *dynamodb.CreateTableOutput
+	}
+
+	DescribeTableExpectation struct {
+		table  *string
+		output *dynamodb.DescribeTableOutput
 	}
 
 	AnyValue struct{}

@@ -16,7 +16,7 @@ func (e *GetItemExpectation) WithKeys(keys map[string]*dynamodb.AttributeValue) 
 	return e
 }
 
-func (e *GetItemExpectation) ExpectReturns(res dynamodb.GetItemOutput) *GetItemExpectation {
+func (e *GetItemExpectation) WillReturns(res dynamodb.GetItemOutput) *GetItemExpectation {
 	e.output = &res
 	return e
 }

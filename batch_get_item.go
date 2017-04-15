@@ -11,7 +11,7 @@ func (e *BatchGetItemExpectation) WithRequest(input map[string]*dynamodb.KeysAnd
 	return e
 }
 
-func (e *BatchGetItemExpectation) ExpectReturns(res dynamodb.BatchGetItemOutput) *BatchGetItemExpectation {
+func (e *BatchGetItemExpectation) WillReturns(res dynamodb.BatchGetItemOutput) *BatchGetItemExpectation {
 	e.output = &res
 	return e
 }
@@ -32,5 +32,5 @@ func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamod
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Get Item Expectation Not Found")
+	return nil, fmt.Errorf("Batch Get Item Expectation Not Found")
 }
