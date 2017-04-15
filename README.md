@@ -3,7 +3,7 @@
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
 ## Install
-``` go
+```
 go get github.com/gusaul/go-dynamock
 ```
 
