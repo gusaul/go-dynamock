@@ -3,7 +3,7 @@
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
 ## Install
-```
+``` go
 go get github.com/gusaul/go-dynamock
 ```
 
@@ -12,7 +12,7 @@ Visit [godoc](https://godoc.org/github.com/gusaul/go-dynamock) for general examp
 
 ### DynamoDB configuration
 First of all, change the dynamodb configuration to use the ***dynamodb interface***. see code below:
-```
+``` go
 package main
 
 import (
@@ -30,7 +30,7 @@ var Dyna *MyDynamo
 
 func ConfigureDynamoDB() {
     Dyna = new(MyDynamo)
-    awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2"),})
+    awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2")})
     var svc *dynamodb.DynamoDB = dynamodb.New(awsSession)
     Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
 }
@@ -38,7 +38,7 @@ func ConfigureDynamoDB() {
 the purpose of code above is to make your dynamoDB object can be mocked by ***dynamock*** through the dynamodbiface.
 
 ### Something you may wanna test
-```
+``` go
 package main
 
 import (
@@ -67,7 +67,7 @@ func GetName(id string) (*string, error) {
 ```
 
 ### Test with DynaMock
-```
+``` go
 package main
 
 import (
@@ -108,12 +108,24 @@ func TestGetName(t *testing.T) {
 }
 ```
 if you just wanna expect the table
-```
+``` go
 mock.ExpectGetItem().ToTable("employee").WillReturns(result)
 ```
 or maybe you didn't care with any arguments, you just need to determine the result
-```
+``` go
 mock.ExpectGetItem().WillReturns(result)
+```
+### Currently Supported Functions
+``` go
+CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error)
+DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error)
+GetItem(*dynamodb.GetItemInput) (*dynamodb.GetItemOutput, error)
+PutItem(*dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error)
+UpdateItem(*dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error)
+DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error)
+BatchGetItem(*dynamodb.BatchGetItemInput) (*dynamodb.BatchGetItemOutput, error)
+BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
+WaitUntilTableExists(*dynamodb.DescribeTableInput) error
 ```
 ## Contributions
 
