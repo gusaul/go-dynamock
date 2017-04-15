@@ -34,6 +34,13 @@ func (e *DynaMock) ExpectUpdateItem() *UpdateItemExpectation {
 	return &e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
 }
 
+func (e *DynaMock) ExpectPutItem() *PutItemExpectation {
+	putItemExpect := PutItemExpectation{table: nil, item: nil}
+	e.PutItemExpect = append(e.PutItemExpect, putItemExpect)
+
+	return &e.PutItemExpect[len(e.PutItemExpect)-1]
+}
+
 func (e *DynaMock) ExpectDeleteItem() *DeleteItemExpectation {
 	deleteItemExpect := DeleteItemExpectation{table: nil, key: nil}
 	e.DeleteItemExpect = append(e.DeleteItemExpect, deleteItemExpect)

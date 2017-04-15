@@ -15,6 +15,7 @@ type (
 		GetItemExpect        []GetItemExpectation
 		BatchGetItemExpect   []BatchGetItemExpectation
 		UpdateItemExpect     []UpdateItemExpectation
+		PutItemExpect        []PutItemExpectation
 		DeleteItemExpect     []DeleteItemExpectation
 		BatchWriteItemExpect []BatchWriteItemExpectation
 		CreateTableExpect    []CreateTableExpectation
@@ -37,6 +38,12 @@ type (
 		key              map[string]*dynamodb.AttributeValue
 		table            *string
 		output           *dynamodb.UpdateItemOutput
+	}
+
+	PutItemExpectation struct {
+		item   map[string]*dynamodb.AttributeValue
+		table  *string
+		output *dynamodb.PutItemOutput
 	}
 
 	DeleteItemExpectation struct {
