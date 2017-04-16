@@ -115,6 +115,17 @@ or maybe you didn't care with any arguments, you just need to determine the resu
 ``` go
 mock.ExpectGetItem().WillReturns(result)
 ```
+and you can do multiple expectations at once, then the expectation will be executed sequentially.
+``` go
+mock.ExpectGetItem().WillReturns(resultOne)
+mock.ExpectUpdateItem().WillReturns(resultTwo)
+mock.ExpectGetItem().WillReturns(resultThree)
+
+/* Result
+the first call of GetItem will return resultOne
+the second call of GetItem will return resultThree
+and the only call of UpdateItem will return resultTwo */
+```
 ### Currently Supported Functions
 ``` go
 CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error)
