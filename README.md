@@ -42,27 +42,27 @@ the purpose of code above is to make your dynamoDB object can be mocked by ***dy
 package main
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+    "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 func GetName(id string) (*string, error) {
-	parameter := &dynamodb.GetItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"id" : {
-				N: aws.String(id)
-			},
-		},
-		TableName: "employee"
-	}
+    parameter := &dynamodb.GetItemInput{
+        Key: map[string]*dynamodb.AttributeValue{
+            "id" : {
+                N: aws.String(id)
+            },
+        },
+        TableName: "employee"
+    }
 
-	response, err := Dyna.Db.GetItem(parameter)
-	if err != nil {
-		return nil, err
-	}
+    response, err := Dyna.Db.GetItem(parameter)
+    if err != nil {
+        return nil, err
+    }
 
-	name := response["name"].S
-	return name, nil
+    name := response["name"].S
+    return name, nil
 }
 ```
 
@@ -71,40 +71,40 @@ func GetName(id string) (*string, error) {
 package main
 
 import (
-	"testing"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/gusaul/go-dynamock"
+    "testing"
+    "github.com/aws/aws-sdk-go/service/dynamodb"
+    "github.com/gusaul/go-dynamock"
 )
 
 var mock *dynamock.DynaMock
 
 func init() {
-	Dyna.db, mock = dynamock.New()
+    Dyna.db, mock = dynamock.New()
 }
 
 func TestGetName(t *testing.T) {
-	expectKey := map[string]*dynamodb.AttributeValue{
-		"id" : {
-			N: aws.String("1")
-		},
-	}
+    expectKey := map[string]*dynamodb.AttributeValue{
+        "id" : {
+            N: aws.String("1")
+        },
+    }
 
-	expectedResult := aws.String("jaka")
-	result := dynamodb.GetItemOutput{
-		Item: map[string]*dynamodb.AttributeValue{
-			"name": {
-				S: expectedResult,
-			},
-		},
-	}
+    expectedResult := aws.String("jaka")
+    result := dynamodb.GetItemOutput{
+        Item: map[string]*dynamodb.AttributeValue{
+            "name": {
+                S: expectedResult,
+            },
+        },
+    }
 
-	//lets start dynamock in action
-	mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
+    //lets start dynamock in action
+    mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
 
-	actualResult, _ := GetName("1")
-	if actualResult != expectedResult {
-		t.Errorf("Test Fail")
-	}
+    actualResult, _ := GetName("1")
+    if actualResult != expectedResult {
+        t.Errorf("Test Fail")
+    }
 }
 ```
 if you just wanna expect the table
