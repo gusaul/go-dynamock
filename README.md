@@ -138,6 +138,7 @@ DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error)
 BatchGetItem(*dynamodb.BatchGetItemInput) (*dynamodb.BatchGetItemOutput, error)
 BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
 WaitUntilTableExists(*dynamodb.DescribeTableInput) error
+Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
 ```
 ## Contributions
 
