@@ -75,3 +75,10 @@ func (e *DynaMock) ExpectWaitTableExist() *WaitTableExistExpectation {
 
 	return &e.WaitTableExistExpect[len(e.WaitTableExistExpect)-1]
 }
+
+func (e *DynaMock) ExpectScan() *ScanExpectation {
+	ScanExpect := ScanExpectation{table: nil}
+	e.ScanExpect = append(e.ScanExpect, ScanExpect)
+
+	return &e.ScanExpect[len(e.ScanExpect)-1]
+}
