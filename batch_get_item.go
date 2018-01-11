@@ -2,8 +2,11 @@ package dynamock
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"reflect"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 func (e *BatchGetItemExpectation) WithRequest(input map[string]*dynamodb.KeysAndAttributes) *BatchGetItemExpectation {
@@ -33,4 +36,23 @@ func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamod
 	}
 
 	return nil, fmt.Errorf("Batch Get Item Expectation Not Found")
+}
+
+func (e *MockDynamoDB) BatchGetItemWithContext(ctx aws.Context, input *dynamodb.BatchGetItemInput, opt ...request.Option) (*dynamodb.BatchGetItemOutput, error) {
+	if len(e.dynaMock.BatchGetItemExpect) > 0 {
+		x := e.dynaMock.BatchGetItemExpect[0] //get first element of expectation
+
+		if x.input != nil {
+			if !reflect.DeepEqual(x.input, input.RequestItems) {
+				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+			}
+		}
+
+		// delete first element of expectation
+		e.dynaMock.BatchGetItemExpect = append(e.dynaMock.BatchGetItemExpect[:0], e.dynaMock.BatchGetItemExpect[1:]...)
+
+		return x.output, nil
+	}
+
+	return nil, fmt.Errorf("Batch Get Item With Context Expectation Not Found")
 }
