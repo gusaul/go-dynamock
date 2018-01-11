@@ -132,10 +132,13 @@ and the only call of UpdateItem will return resultTwo */
 CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error)
 DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error)
 GetItem(*dynamodb.GetItemInput) (*dynamodb.GetItemOutput, error)
+GetItemWithContext(aws.Context, *dynamodb.GetItemInput, ...request.Option) (*dynamodb.GetItemOutput, error)
 PutItem(*dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error)
 UpdateItem(*dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error)
+UpdateItemWithContext(aws.Context, *dynamodb.UpdateItemInput, ...request.Option) (*dynamodb.UpdateItemOutput, error)
 DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error)
 BatchGetItem(*dynamodb.BatchGetItemInput) (*dynamodb.BatchGetItemOutput, error)
+BatchGetItemWithContext(aws.Context, *dynamodb.BatchGetItemInput, ...request.Option) (*dynamodb.BatchGetItemOutput, error)
 BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
 WaitUntilTableExists(*dynamodb.DescribeTableInput) error
 Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
