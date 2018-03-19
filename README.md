@@ -142,6 +142,7 @@ BatchGetItemWithContext(aws.Context, *dynamodb.BatchGetItemInput, ...request.Opt
 BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
 WaitUntilTableExists(*dynamodb.DescribeTableInput) error
 Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
+Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error)
 ```
 ## Contributions
 

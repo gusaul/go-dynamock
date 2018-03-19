@@ -22,6 +22,7 @@ type (
 		DescribeTableExpect  []DescribeTableExpectation
 		WaitTableExistExpect []WaitTableExistExpectation
 		ScanExpect           []ScanExpectation
+		QueryExpect          []QueryExpectation
 	}
 
 	GetItemExpectation struct {
@@ -78,6 +79,11 @@ type (
 	ScanExpectation struct {
 		table *string
 		output *dynamodb.ScanOutput
+	}
+
+	QueryExpectation struct {
+		table *string
+		output *dynamodb.QueryOutput
 	}
 
 	AnyValue struct{}

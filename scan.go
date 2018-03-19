@@ -31,5 +31,5 @@ func (e *MockDynamoDB) Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, er
         return x.output, nil
     }
 
-    return nil, fmt.Errorf("Wait Table Exist Expectation Not Found")
+    return nil, fmt.Errorf("Scan Table Expectation Not Found")
 }
