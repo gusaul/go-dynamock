@@ -82,3 +82,10 @@ func (e *DynaMock) ExpectScan() *ScanExpectation {
 
 	return &e.ScanExpect[len(e.ScanExpect)-1]
 }
+
+func (e *DynaMock) ExpectQuery() *QueryExpectation {
+	queryExpect := QueryExpectation{table: nil}
+	e.QueryExpect = append(e.QueryExpect, queryExpect)
+
+	return &e.QueryExpect[len(e.QueryExpect)-1]
+}
