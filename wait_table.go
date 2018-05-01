@@ -2,7 +2,7 @@ package dynamock
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 func (e *WaitTableExistExpectation) Table(table string) *WaitTableExistExpectation {

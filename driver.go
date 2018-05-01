@@ -1,7 +1,7 @@
 package dynamock
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
 
 var mock *MockDynamoDB

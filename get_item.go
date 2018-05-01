@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 func (e *GetItemExpectation) ToTable(table string) *GetItemExpectation {
@@ -49,7 +49,7 @@ func (e *MockDynamoDB) GetItem(input *dynamodb.GetItemInput) (*dynamodb.GetItemO
 	return nil, fmt.Errorf("Get Item Expectation Not Found")
 }
 
-func (e *MockDynamoDB) GetItemWithContext(ctx aws.Context, input *dynamodb.GetItemInput, opt ...request.Option) (*dynamodb.GetItemOutput, error) {
+func (e *MockDynamoDB) GetItemWithContext(ctx aws.Context, input *dynamodb.GetItemInput) (*dynamodb.GetItemOutput, error) {
 	if len(e.dynaMock.GetItemExpect) > 0 {
 		x := e.dynaMock.GetItemExpect[0] //get first element of expectation
 
