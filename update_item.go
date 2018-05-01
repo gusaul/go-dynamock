@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 func (e *UpdateItemExpectation) ToTable(table string) *UpdateItemExpectation {
@@ -60,7 +60,7 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 	return nil, fmt.Errorf("Update Item Expectation Not Found")
 }
 
-func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.UpdateItemInput, opt ...request.Option) (*dynamodb.UpdateItemOutput, error) {
+func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error) {
 	if len(e.dynaMock.UpdateItemExpect) > 0 {
 		x := e.dynaMock.UpdateItemExpect[0] //get first element of expectation
 

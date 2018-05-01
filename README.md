@@ -16,10 +16,10 @@ First of all, change the dynamodb configuration to use the ***dynamodb interface
 package main
 
 import (
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/dynamodb"
-    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/aws/session"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
 
 type MyDynamo struct {
@@ -42,8 +42,8 @@ the purpose of code above is to make your dynamoDB object can be mocked by ***dy
 package main
 
 import (
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 func GetName(id string) (*string, error) {
@@ -72,8 +72,8 @@ package main
 
 import (
     "testing"
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
     "github.com/gusaul/go-dynamock"
 )
 

@@ -2,20 +2,13 @@
 
 
 [[projects]]
-  name = "github.com/aws/aws-sdk-go"
+  name = "github.com/aws/aws-sdk-go-v2"
   packages = [
     "aws",
     "aws/awserr",
-    "aws/awsutil",
-    "aws/client",
-    "aws/client/metadata",
-    "aws/credentials",
-    "aws/endpoints",
-    "aws/request",
     "aws/signer/v4",
-    "internal/sdkio",
-    "internal/sdkrand",
-    "internal/shareddefaults",
+    "internal/awsutil",
+    "internal/sdk",
     "private/protocol",
     "private/protocol/json/jsonutil",
     "private/protocol/jsonrpc",
@@ -23,14 +16,8 @@
     "service/dynamodb",
     "service/dynamodb/dynamodbiface"
   ]
-  revision = "236a3fce423171d03ae327a8aa2512e6fb24df36"
-  version = "v1.13.39"
-
-[[projects]]
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
-  version = "v1.36.0"
+  revision = "3383499f1024e86a3c68200f9bdc6759ee20eb70"
+  version = "v2.0.0-preview.3"
 
 [[projects]]
   name = "github.com/jmespath/go-jmespath"
@@ -40,6 +27,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2e9935a8b9705d3abb12e820b85f31c44eed38de109e50f55f5f048c9ad78e9e"
+  inputs-digest = "cf7654bc31cbe1497c77347cf70ee301bf2803921b008f2cdcd610b9c31f593e"
   solver-name = "gps-cdcl"
   solver-version = 1
