@@ -2,19 +2,23 @@ package dynamock
 
 import (
 	"fmt"
+
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
+// Table - method for set Table expectation
 func (e *WaitTableExistExpectation) Table(table string) *WaitTableExistExpectation {
 	e.table = &table
 	return e
 }
 
+// WillReturns - method for set desired result
 func (e *WaitTableExistExpectation) WillReturns(err error) *WaitTableExistExpectation {
 	e.err = err
 	return e
 }
 
+// WaitUntilTableExists - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) WaitUntilTableExists(input *dynamodb.DescribeTableInput) error {
 	if len(e.dynaMock.WaitTableExistExpect) > 0 {
 		x := e.dynaMock.WaitTableExistExpect[0] //get first element of expectation

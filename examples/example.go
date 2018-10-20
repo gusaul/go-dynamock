@@ -7,19 +7,23 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
+// MyDynamo struct hold dynamodb connection
 type MyDynamo struct {
 	Db dynamodbiface.DynamoDBAPI
 }
 
+// Dyna - object from MyDynamo
 var Dyna *MyDynamo
 
+// ConfigureDynamoDB - init func for open connection to aws dynamodb
 func ConfigureDynamoDB() {
 	Dyna = new(MyDynamo)
 	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2")})
-	var svc *dynamodb.DynamoDB = dynamodb.New(awsSession)
+	svc := dynamodb.New(awsSession)
 	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
 }
 
+// GetName - example func using GetItem method
 func GetName(id string) (*string, error) {
 	parameter := &dynamodb.GetItemInput{
 		Key: map[string]*dynamodb.AttributeValue{

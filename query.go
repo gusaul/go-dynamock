@@ -8,16 +8,19 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
+// Table - method for set Table expectation
 func (e *QueryExpectation) Table(table string) *QueryExpectation {
 	e.table = &table
 	return e
 }
 
+// WillReturns - method for set desired result
 func (e *QueryExpectation) WillReturns(res dynamodb.QueryOutput) *QueryExpectation {
 	e.output = &res
 	return e
 }
 
+// Query - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error) {
 	if len(e.dynaMock.QueryExpect) > 0 {
 		x := e.dynaMock.QueryExpect[0] //get first element of expectation
@@ -37,6 +40,7 @@ func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput,
 	return nil, fmt.Errorf("Query Table Expectation Not Found")
 }
 
+// QueryWithContext - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) QueryWithContext(ctx aws.Context, input *dynamodb.QueryInput, options ...request.Option) (*dynamodb.QueryOutput, error) {
 	if len(e.dynaMock.QueryExpect) > 0 {
 		x := e.dynaMock.QueryExpect[0] //get first element of expectation
