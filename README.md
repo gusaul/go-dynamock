@@ -1,4 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/gusaul/go-dynamock?status.png)](https://godoc.org/github.com/gusaul/go-dynamock) [![Build Status](https://travis-ci.com/gusaul/go-dynamock.svg?branch=master)](https://travis-ci.com/gusaul/go-dynamock)
+[![GoDoc](https://godoc.org/github.com/gusaul/go-dynamock?status.png)](https://godoc.org/github.com/gusaul/go-dynamock) [![Go Report Card](https://goreportcard.com/badge/github.com/gusaul/go-dynamock)](https://goreportcard.com/report/github.com/gusaul/go-dynamock) [![Build Status](https://travis-ci.com/gusaul/go-dynamock.svg?branch=master)](https://travis-ci.com/gusaul/go-dynamock)
 # go-dynamock
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
@@ -31,7 +31,7 @@ var Dyna *MyDynamo
 func ConfigureDynamoDB() {
 	Dyna = new(MyDynamo)
 	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2")})
-	var svc *dynamodb.DynamoDB = dynamodb.New(awsSession)
+	svc := dynamodb.New(awsSession)
 	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
 }
 ```

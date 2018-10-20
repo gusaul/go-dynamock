@@ -2,20 +2,24 @@ package dynamock
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"reflect"
+
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
+// WithRequest - method for set Request expectation
 func (e *BatchWriteItemExpectation) WithRequest(input map[string][]*dynamodb.WriteRequest) *BatchWriteItemExpectation {
 	e.input = input
 	return e
 }
 
+// WillReturns - method for set desired result
 func (e *BatchWriteItemExpectation) WillReturns(res dynamodb.BatchWriteItemOutput) *BatchWriteItemExpectation {
 	e.output = &res
 	return e
 }
 
+// BatchWriteItem - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) BatchWriteItem(input *dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error) {
 	if len(e.dynaMock.BatchWriteItemExpect) > 0 {
 		x := e.dynaMock.BatchWriteItemExpect[0] //get first element of expectation
