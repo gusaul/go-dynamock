@@ -154,4 +154,4 @@ and will be treated cautiously
 
 ## License
 
-The [three clause BSD license](http://en.wikipedia.org/wiki/BSD_licenses)
+The [MIT License](https://github.com/gusaul/go-dynamock/blob/master/LICENSE)
