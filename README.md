@@ -1,4 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/gusaul/go-dynamock?status.png)](https://godoc.org/github.com/gusaul/go-dynamock)
+[![GoDoc](https://godoc.org/github.com/gusaul/go-dynamock?status.png)](https://godoc.org/github.com/gusaul/go-dynamock) [![Build Status](https://travis-ci.com/gusaul/go-dynamock.svg?branch=master)](https://travis-ci.com/gusaul/go-dynamock)
 # go-dynamock
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
