@@ -1,11 +1,11 @@
 package dynamock
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 // Table - method for set Table expectation
@@ -41,7 +41,7 @@ func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput,
 }
 
 // QueryWithContext - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) QueryWithContext(ctx aws.Context, input *dynamodb.QueryInput, options ...request.Option) (*dynamodb.QueryOutput, error) {
+func (e *MockDynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryInput, options ...aws.Option) (*dynamodb.QueryOutput, error) {
 	if len(e.dynaMock.QueryExpect) > 0 {
 		x := e.dynaMock.QueryExpect[0] //get first element of expectation
 

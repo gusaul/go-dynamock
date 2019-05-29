@@ -1,14 +1,14 @@
 package dynamock
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
 
 type (
 	// MockDynamoDB struct hold DynamoDBAPI implementation and mock object
 	MockDynamoDB struct {
-		dynamodbiface.DynamoDBAPI
+		dynamodbiface.ClientAPI
 		dynaMock *DynaMock
 	}
 

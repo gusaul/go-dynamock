@@ -1,7 +1,7 @@
 package dynamock
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
 
 var mock *MockDynamoDB
@@ -9,7 +9,7 @@ var mock *MockDynamoDB
 // New - constructor for mock instantiation
 // Return : 1st => DynamoDBAPI implementation, used to inject app object
 // 			2nd => mock object, used to set expectation and desired result
-func New() (dynamodbiface.DynamoDBAPI, *DynaMock) {
+func New() (dynamodbiface.ClientAPI, *DynaMock) {
 	mock = new(MockDynamoDB)
 	mock.dynaMock = new(DynaMock)
 

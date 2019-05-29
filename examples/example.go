@@ -1,15 +1,16 @@
 package examples
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"context"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go-v2/aws/external"
 )
 
 // MyDynamo struct hold dynamodb connection
 type MyDynamo struct {
-	Db dynamodbiface.DynamoDBAPI
+	Db dynamodbiface.ClientAPI
 }
 
 // Dyna - object from MyDynamo
@@ -18,15 +19,14 @@ var Dyna *MyDynamo
 // ConfigureDynamoDB - init func for open connection to aws dynamodb
 func ConfigureDynamoDB() {
 	Dyna = new(MyDynamo)
-	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2")})
-	svc := dynamodb.New(awsSession)
-	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
+	cnf, _ := external.LoadDefaultAWSConfig()
+	Dyna.Db = dynamodb.New(cnf)
 }
 
 // GetName - example func using GetItem method
-func GetName(id string) (*string, error) {
+func GetName(ctx context.Context, id string) (*dynamodb.GetItemResponse, error) {
 	parameter := &dynamodb.GetItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
+		Key: map[string]dynamodb.AttributeValue{
 			"id": {
 				N: aws.String(id),
 			},
@@ -34,11 +34,11 @@ func GetName(id string) (*string, error) {
 		TableName: aws.String("employee"),
 	}
 
-	response, err := Dyna.Db.GetItem(parameter)
+	req := Dyna.Db.GetItemRequest(parameter)
+	response, err := req.Send(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	name := response.Item["name"].S
-	return name, nil
+	return response, nil
 }

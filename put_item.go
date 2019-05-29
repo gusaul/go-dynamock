@@ -1,12 +1,12 @@
 package dynamock
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 // ToTable - method for set Table expectation
@@ -54,7 +54,7 @@ func (e *MockDynamoDB) PutItem(input *dynamodb.PutItemInput) (*dynamodb.PutItemO
 }
 
 // PutItemWithContext - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) PutItemWithContext(ctx aws.Context, input *dynamodb.PutItemInput, opt ...request.Option) (*dynamodb.PutItemOutput, error) {
+func (e *MockDynamoDB) PutItemWithContext(ctx context.Context, input *dynamodb.PutItemInput, opt ...aws.Option) (*dynamodb.PutItemOutput, error) {
 	if len(e.dynaMock.PutItemExpect) > 0 {
 		x := e.dynaMock.PutItemExpect[0] //get first element of expectation
 

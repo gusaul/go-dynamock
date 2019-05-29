@@ -1,12 +1,12 @@
 package dynamock
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 // WithRequest - method for set Request expectation
@@ -42,7 +42,7 @@ func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamod
 }
 
 // BatchGetItemWithContext - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) BatchGetItemWithContext(ctx aws.Context, input *dynamodb.BatchGetItemInput, opt ...request.Option) (*dynamodb.BatchGetItemOutput, error) {
+func (e *MockDynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.BatchGetItemInput, opt ...aws.Option) (*dynamodb.BatchGetItemOutput, error) {
 	if len(e.dynaMock.BatchGetItemExpect) > 0 {
 		x := e.dynaMock.BatchGetItemExpect[0] //get first element of expectation
 
