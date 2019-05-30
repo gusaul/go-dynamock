@@ -30,8 +30,8 @@ type (
 	// GetItemExpectation struct hold expectation field, err, and result
 	GetItemExpectation struct {
 		table  *string
-		key    map[string]*dynamodb.AttributeValue
-		output *dynamodb.GetItemOutput
+		key    map[string]dynamodb.AttributeValue
+		output *dynamodb.GetItemResponse
 	}
 
 	// BatchGetItemExpectation struct hold expectation field, err, and result

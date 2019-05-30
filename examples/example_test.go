@@ -1,7 +1,6 @@
 package examples
 
 import (
-	"context"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,24 +11,24 @@ import (
 var mock *dynamock.DynaMock
 
 func init() {
-	Dyna = new(MyDynamo)
-	Dyna.Db, mock = dynamock.New()
+	Fake = new(FakeDynamo)
+	Fake.DB, mock = dynamock.New()
 }
 
 func TestGetName(t *testing.T) {
-	ConfigureDynamoDB()
-
-	expectKey := map[string]*dynamodb.AttributeValue{
+	expectKey := map[string]dynamodb.AttributeValue{
 		"id": {
 			N: aws.String("1"),
 		},
 	}
 
 	expectedResult := aws.String("jaka")
-	result := dynamodb.GetItemOutput{
-		Item: map[string]dynamodb.AttributeValue{
-			"name": {
-				S: expectedResult,
+	result := dynamodb.GetItemResponse{
+		GetItemOutput: &dynamodb.GetItemOutput{
+			Item: map[string]dynamodb.AttributeValue{
+				"name": {
+					S: expectedResult,
+				},
 			},
 		},
 	}
@@ -37,9 +36,12 @@ func TestGetName(t *testing.T) {
 	//lets start dynamock in action
 	mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
 
-	actualResult, _ := GetName(context.Background(),"1")
-	t.Fatal(actualResult)
-	// if actualResult != expectedResult {
-	// 	t.Fatal("Test Fail", actualResult, *expectedResult)
-	// }
+	actualResult, err := GetName("1")
+	if err != nil{
+		t.Fatal(err)
+	}
+
+	if aws.StringValue(actualResult) != aws.StringValue(expectedResult) {
+		t.Fatal("Test Fail", actualResult, *expectedResult)
+	}
 }

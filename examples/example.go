@@ -5,26 +5,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
-	"github.com/aws/aws-sdk-go-v2/aws/external"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
 )
 
-// MyDynamo struct hold dynamodb connection
-type MyDynamo struct {
-	Db dynamodbiface.ClientAPI
+// FakeDynamo struct hold dynamodb connection
+type FakeDynamo struct {
+	DB dynamodbiface.ClientAPI
 }
 
-// Dyna - object from MyDynamo
-var Dyna *MyDynamo
-
-// ConfigureDynamoDB - init func for open connection to aws dynamodb
-func ConfigureDynamoDB() {
-	Dyna = new(MyDynamo)
-	cnf, _ := external.LoadDefaultAWSConfig()
-	Dyna.Db = dynamodb.New(cnf)
-}
+// Fake - object from MyDynamo
+var Fake *FakeDynamo
 
 // GetName - example func using GetItem method
-func GetName(ctx context.Context, id string) (*dynamodb.GetItemResponse, error) {
+func GetName(id string) (*string, error) {
 	parameter := &dynamodb.GetItemInput{
 		Key: map[string]dynamodb.AttributeValue{
 			"id": {
@@ -34,11 +27,20 @@ func GetName(ctx context.Context, id string) (*dynamodb.GetItemResponse, error) 
 		TableName: aws.String("employee"),
 	}
 
-	req := Dyna.Db.GetItemRequest(parameter)
-	response, err := req.Send(ctx)
-	if err != nil {
-		return nil, err
+	req := Fake.DB.GetItemRequest(parameter)
+	if req.Error != nil {
+		return aws.String(""), req.Error
 	}
 
-	return response, nil
+	value := aws.String("")
+	if output, err := req.Send(context.Background()); err == nil {
+		if v, ok := output.Item["name"]; ok {
+			err := dynamodbattribute.Unmarshal(&v, &value)
+			if err != nil{
+				return aws.String(""), err
+			}
+		}
+	}
+
+	return value, nil
 }
