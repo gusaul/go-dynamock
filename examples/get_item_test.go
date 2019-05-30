@@ -3,16 +3,15 @@ package examples
 import (
 	"testing"
 
+	dynamock "go-dynamock"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	dynamock "go-dynamock"
 )
-
-var mock *dynamock.DynaMock
 
 func init() {
 	Fake = new(FakeDynamo)
-	Fake.DB, mock = dynamock.New()
+	Fake.DB, Mock = dynamock.New()
 }
 
 func TestGetName(t *testing.T) {
@@ -22,7 +21,7 @@ func TestGetName(t *testing.T) {
 		},
 	}
 
-	expectedResult := aws.String("jaka")
+	expectedResult := aws.String("rick sanchez")
 	result := dynamodb.GetItemResponse{
 		GetItemOutput: &dynamodb.GetItemOutput{
 			Item: map[string]dynamodb.AttributeValue{
@@ -33,11 +32,10 @@ func TestGetName(t *testing.T) {
 		},
 	}
 
-	//lets start dynamock in action
-	mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
+	Mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturn(result)
 
 	actualResult, err := GetName("1")
-	if err != nil{
+	if err != nil {
 		t.Fatal(err)
 	}
 

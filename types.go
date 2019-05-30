@@ -31,7 +31,14 @@ type (
 	GetItemExpectation struct {
 		table  *string
 		key    map[string]dynamodb.AttributeValue
-		output *dynamodb.GetItemResponse
+		output *dynamodb.GetItemOutput
+	}
+
+	// PutItemExpectation struct hold expectation field, err, and result
+	PutItemExpectation struct {
+		item   map[string]dynamodb.AttributeValue
+		table  *string
+		output *dynamodb.PutItemOutput
 	}
 
 	// BatchGetItemExpectation struct hold expectation field, err, and result
@@ -46,13 +53,6 @@ type (
 		key              map[string]*dynamodb.AttributeValue
 		table            *string
 		output           *dynamodb.UpdateItemOutput
-	}
-
-	// PutItemExpectation struct hold expectation field, err, and result
-	PutItemExpectation struct {
-		item   map[string]*dynamodb.AttributeValue
-		table  *string
-		output *dynamodb.PutItemOutput
 	}
 
 	// DeleteItemExpectation struct hold expectation field, err, and result

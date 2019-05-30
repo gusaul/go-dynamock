@@ -20,47 +20,47 @@ func (e *GetItemExpectation) WithKeys(keys map[string]dynamodb.AttributeValue) *
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *GetItemExpectation) WillReturns(res dynamodb.GetItemResponse) *GetItemExpectation {
-	e.output = &res
+// WillReturn - method for set desired result
+func (e *GetItemExpectation) WillReturn(res dynamodb.GetItemResponse) *GetItemExpectation {
+	e.output = res.GetItemOutput
 	return e
 }
 
-func (e *MockDynamoDB) GetItemRequest(input *dynamodb.GetItemInput) dynamodb.GetItemRequest{
+func (e *MockDynamoDB) GetItemRequest(input *dynamodb.GetItemInput) dynamodb.GetItemRequest {
 	req := dynamodb.GetItemRequest{
 		Request: &aws.Request{
 			HTTPRequest: &http.Request{},
 		},
 	}
 
-	if len(e.dynaMock.GetItemExpect) > 0 {
-		x := e.dynaMock.GetItemExpect[0] //get first element of expectation
-
-		if x.table != nil {
-			if *x.table != *input.TableName {
-				req.Error = ErrTableExpectationMismatch
-
-				return req
-			}
-		}
-
-		if x.key != nil {
-			if !reflect.DeepEqual(x.key, input.Key) {
-				req.Error = ErrKeyExpectationMismatch
-
-				return req
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.GetItemExpect = append(e.dynaMock.GetItemExpect[:0], e.dynaMock.GetItemExpect[1:]...)
-
-		req.Data = x.output.GetItemOutput
+	if len(e.dynaMock.GetItemExpect) == 0 {
+		req.Error = ErrNoExpectation
 
 		return req
 	}
 
-	req.Error = ErrNoExpectation
+	x := e.dynaMock.GetItemExpect[0] //get first element of expectation
+
+	if x.table != nil {
+		if *x.table != *input.TableName {
+			req.Error = ErrTableExpectationMismatch
+
+			return req
+		}
+	}
+
+	if x.key != nil {
+		if !reflect.DeepEqual(x.key, input.Key) {
+			req.Error = ErrKeyExpectationMismatch
+
+			return req
+		}
+	}
+
+	// delete first element of expectation
+	e.dynaMock.GetItemExpect = append(e.dynaMock.GetItemExpect[:0], e.dynaMock.GetItemExpect[1:]...)
+
+	req.Data = x.output
 
 	return req
 }
