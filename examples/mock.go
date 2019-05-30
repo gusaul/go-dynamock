@@ -1,7 +1,7 @@
 package examples
 
 import (
-	dynamock "go-dynamock"
+	dynamock "github.com/groovili/go-dynamock"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
