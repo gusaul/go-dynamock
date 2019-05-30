@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"strconv"
 	"testing"
 
 	dynamock "go-dynamock"
@@ -14,32 +15,40 @@ func init() {
 	Fake.DB, Mock = dynamock.New()
 }
 
-func TestPutName(t *testing.T) {
-	expectKey := map[string]dynamodb.AttributeValue{
+func TestPutItem(t *testing.T) {
+	ID := 1
+	expectedResult := "pepe the frog"
+
+	item := map[string]dynamodb.AttributeValue{
 		"id": {
-			N: aws.String("1"),
+			N: aws.String(strconv.Itoa(ID)),
+		},
+		"name": {
+			S: aws.String(expectedResult),
 		},
 	}
 
-	expectedResult := aws.String("pepe")
 	result := dynamodb.PutItemResponse{
 		PutItemOutput: &dynamodb.PutItemOutput{
 			Attributes: map[string]dynamodb.AttributeValue{
+				"id": {
+					N: aws.String(strconv.Itoa(ID)),
+				},
 				"name": {
-					S: expectedResult,
+					S: aws.String(expectedResult),
 				},
 			},
 		},
 	}
 
-	Mock.ExpectPutItem().ToTable("employee").WithItems(expectKey).WillReturn(result)
+	Mock.ExpectPutItem().ToTable("employee").WithItems(item).WillReturn(result)
 
-	actualResult, err := PutName("1")
+	actualResult, err := PutNameByID(ID, expectedResult)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if aws.StringValue(actualResult) != aws.StringValue(expectedResult) {
-		t.Fatal("Test Fail", actualResult, *expectedResult)
+	if aws.StringValue(actualResult) != expectedResult {
+		t.Fatalf("Fail: expected: %s, got :%s", expectedResult, aws.StringValue(actualResult))
 	}
 }

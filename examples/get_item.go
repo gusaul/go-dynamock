@@ -2,18 +2,19 @@ package examples
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
 )
 
-// GetName - example func using GetItem method
-func GetName(id string) (*string, error) {
+// GetNameByID - example func using GetItemRequest method
+func GetNameByID(ID int) (*string, error) {
 	param := &dynamodb.GetItemInput{
 		Key: map[string]dynamodb.AttributeValue{
 			"id": {
-				N: aws.String(id),
+				N: aws.String(strconv.Itoa(ID)),
 			},
 		},
 		TableName: aws.String("employee"),

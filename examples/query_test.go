@@ -15,6 +15,7 @@ func init() {
 }
 
 func TestQueryByID(t *testing.T) {
+	ID := 16
 	expectedResult := aws.String("pepe")
 
 	result := dynamodb.QueryResponse{
@@ -31,12 +32,12 @@ func TestQueryByID(t *testing.T) {
 
 	Mock.ExpectQuery().Table("employee").WillReturn(result)
 
-	actualResult, err := QueryByID(1)
+	actualResult, err := QueryByID(ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if aws.StringValue(actualResult) != aws.StringValue(expectedResult) {
-		t.Fatal("Test Fail", actualResult, *expectedResult)
+		t.Fatalf("Fail: expected: %s, got :%s", aws.StringValue(actualResult), aws.StringValue(actualResult))
 	}
 }

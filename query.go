@@ -20,7 +20,7 @@ func (e *QueryExpectation) WillReturn(res dynamodb.QueryResponse) *QueryExpectat
 	return e
 }
 
-// Query - this func will be invoked when test running matching expectation with actual input
+// QueryRequest - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) QueryRequest(input *dynamodb.QueryInput) dynamodb.QueryRequest {
 	req := dynamodb.QueryRequest{
 		Request: &aws.Request{

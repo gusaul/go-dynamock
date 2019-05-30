@@ -9,23 +9,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
 )
 
-func QueryByID(ID int) (*string, error) {
-	param := &dynamodb.QueryInput{
-		KeyConditionExpression: aws.String("#id = :id"),
-		ExpressionAttributeNames: map[string]string{
-			"#id": "ID",
+// UpdateName - example func using UpdateItemRequest method
+func UpdateNameByID(ID int, name string) (*string, error) {
+	param := &dynamodb.UpdateItemInput{
+		Key: map[string]dynamodb.AttributeValue{
+			"id": {N: aws.String(strconv.Itoa(ID))},
 		},
-		ExpressionAttributeValues: map[string]dynamodb.AttributeValue{
-			":id": {
-				N: aws.String(strconv.Itoa(ID)),
-			},
+		AttributeUpdates: map[string]dynamodb.AttributeValueUpdate{
+			"name": {Action: dynamodb.AttributeActionPut, Value: &dynamodb.AttributeValue{N: aws.String(name)}},
 		},
 		TableName: aws.String("employee"),
-		Select:    dynamodb.SelectAllAttributes,
-		Limit:     aws.Int64(1),
 	}
 
-	req := Fake.DB.QueryRequest(param)
+	req := Fake.DB.UpdateItemRequest(param)
 	if req.Error != nil {
 		return nil, req.Error
 	}
@@ -36,7 +32,7 @@ func QueryByID(ID int) (*string, error) {
 		return nil, err
 	}
 
-	if v, ok := output.QueryOutput.Items[0]["name"]; ok {
+	if v, ok := output.UpdateItemOutput.Attributes["name"]; ok {
 		err := dynamodbattribute.Unmarshal(&v, &value)
 		if err != nil {
 			return aws.String(""), err

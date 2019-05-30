@@ -15,18 +15,18 @@ func init() {
 	Fake.DB, Mock = dynamock.New()
 }
 
-func TestGetItem(t *testing.T) {
-	ID := 123
+func TestUpdateItem(t *testing.T) {
+	ID := 33
 	expectKey := map[string]dynamodb.AttributeValue{
 		"id": {
 			N: aws.String(strconv.Itoa(ID)),
 		},
 	}
 
-	expectedResult := "rick sanchez"
-	result := dynamodb.GetItemResponse{
-		GetItemOutput: &dynamodb.GetItemOutput{
-			Item: map[string]dynamodb.AttributeValue{
+	expectedResult := "morty"
+	result := dynamodb.UpdateItemResponse{
+		UpdateItemOutput: &dynamodb.UpdateItemOutput{
+			Attributes: map[string]dynamodb.AttributeValue{
 				"id": {
 					N: aws.String(strconv.Itoa(ID)),
 				},
@@ -37,14 +37,14 @@ func TestGetItem(t *testing.T) {
 		},
 	}
 
-	Mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturn(result)
+	Mock.ExpectUpdateItem().ToTable("employee").WithKeys(expectKey).WillReturn(result)
 
-	actualResult, err := GetNameByID(ID)
+	actualResult, err := UpdateNameByID(ID, expectedResult)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if aws.StringValue(actualResult) != expectedResult {
-		t.Fatalf("Fail: expected: %s, got: %s", expectedResult, aws.StringValue(actualResult))
+		t.Fatal("Test Fail", actualResult, expectedResult)
 	}
 }

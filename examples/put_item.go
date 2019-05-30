@@ -2,6 +2,7 @@ package examples
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -9,11 +10,14 @@ import (
 )
 
 // GetName - example func using GetItem method
-func PutName(id string) (*string, error) {
+func PutNameByID(ID int, name string) (*string, error) {
 	param := &dynamodb.PutItemInput{
 		Item: map[string]dynamodb.AttributeValue{
 			"id": {
-				N: aws.String(id),
+				N: aws.String(strconv.Itoa(ID)),
+			},
+			"name": {
+				S: aws.String(name),
 			},
 		},
 		TableName: aws.String("employee"),
