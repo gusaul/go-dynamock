@@ -2,7 +2,7 @@ package dynamock
 
 import (
 	"context"
-	"fmt"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -14,28 +14,30 @@ func (e *WaitTableExistExpectation) Table(table string) *WaitTableExistExpectati
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *WaitTableExistExpectation) WillReturns(err error) *WaitTableExistExpectation {
+// WillReturn - method for set desired result
+func (e *WaitTableExistExpectation) WillReturn(err error) *WaitTableExistExpectation {
 	e.err = err
+
 	return e
 }
 
 // WaitUntilTableExists - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) WaitUntilTableExists(ctx context.Context, input *dynamodb.DescribeTableInput, opt ...aws.WaiterOption) error {
-	if len(e.dynaMock.WaitTableExistExpect) > 0 {
-		x := e.dynaMock.WaitTableExistExpect[0] //get first element of expectation
-
-		if x.table != nil {
-			if *x.table != *input.TableName {
-				return fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.WaitTableExistExpect = append(e.dynaMock.WaitTableExistExpect[:0], e.dynaMock.WaitTableExistExpect[1:]...)
-
-		return x.err
+	if len(e.dynaMock.WaitTableExistExpect) == 0 {
+		return ErrNoExpectation
 	}
 
-	return fmt.Errorf("Wait Table Exist Expectation Not Found")
+	x := e.dynaMock.WaitTableExistExpect[0]
+
+	if x.table == nil {
+		return ErrNoTable
+	}
+
+	if aws.StringValue(x.table) != aws.StringValue(input.TableName) {
+		return ErrTableExpectationMismatch
+	}
+
+	e.dynaMock.WaitTableExistExpect = append(e.dynaMock.WaitTableExistExpect[:0], e.dynaMock.WaitTableExistExpect[1:]...)
+
+	return nil
 }

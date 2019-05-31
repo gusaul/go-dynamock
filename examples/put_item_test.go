@@ -41,7 +41,7 @@ func TestPutItem(t *testing.T) {
 		},
 	}
 
-	Mock.ExpectPutItem().ToTable("employee").WithItems(item).WillReturn(result)
+	Mock.ExpectPutItem().Table("employee").WithItems(item).WillReturn(result)
 
 	actualResult, err := PutNameByID(ID, expectedResult)
 	if err != nil {

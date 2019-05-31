@@ -1,7 +1,9 @@
 package dynamock
 
 import (
-	"fmt"
+	"net/http"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
@@ -12,28 +14,37 @@ func (e *ScanExpectation) Table(table string) *ScanExpectation {
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *ScanExpectation) WillReturns(res dynamodb.ScanOutput) *ScanExpectation {
-	e.output = &res
+// WillReturn - method for set desired result
+func (e *ScanExpectation) WillReturn(res dynamodb.ScanResponse) *ScanExpectation {
+	e.output = res.ScanOutput
 	return e
 }
 
-// Scan - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error) {
-	if len(e.dynaMock.ScanExpect) > 0 {
-		x := e.dynaMock.ScanExpect[0] //get first element of expectation
-
-		if x.table != nil {
-			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.ScanExpect = append(e.dynaMock.ScanExpect[:0], e.dynaMock.ScanExpect[1:]...)
-
-		return x.output, nil
+// ScanRequest - this func will be invoked when test running matching expectation with actual input
+func (e *MockDynamoDB) ScanRequest(input *dynamodb.ScanInput) dynamodb.ScanRequest {
+	req := dynamodb.ScanRequest{
+		Request: &aws.Request{
+			HTTPRequest: &http.Request{},
+		},
 	}
 
-	return nil, fmt.Errorf("Scan Table Expectation Not Found")
+	if len(e.dynaMock.ScanExpect) == 0 {
+		req.Error = ErrNoExpectation
+
+		return req
+	}
+
+	x := e.dynaMock.ScanExpect[0]
+
+	validateInput(input, req.Request)
+	validateTable(x.table, input.TableName, req.Request)
+	if req.Error != nil {
+		return req
+	}
+
+	e.dynaMock.ScanExpect = append(e.dynaMock.ScanExpect[:0], e.dynaMock.ScanExpect[1:]...)
+
+	req.Data = x.output
+
+	return req
 }

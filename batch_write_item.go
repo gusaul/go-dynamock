@@ -1,40 +1,50 @@
 package dynamock
 
 import (
-	"fmt"
-	"reflect"
+	"net/http"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 // WithRequest - method for set Request expectation
-func (e *BatchWriteItemExpectation) WithRequest(input map[string][]*dynamodb.WriteRequest) *BatchWriteItemExpectation {
+func (e *BatchWriteItemExpectation) WithRequest(input map[string][]dynamodb.WriteRequest) *BatchWriteItemExpectation {
 	e.input = input
 	return e
 }
 
 // WillReturns - method for set desired result
-func (e *BatchWriteItemExpectation) WillReturns(res dynamodb.BatchWriteItemOutput) *BatchWriteItemExpectation {
-	e.output = &res
+func (e *BatchWriteItemExpectation) WillReturn(res dynamodb.BatchWriteItemResponse) *BatchWriteItemExpectation {
+	e.output = res.BatchWriteItemOutput
 	return e
 }
 
-// BatchWriteItem - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) BatchWriteItem(input *dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error) {
-	if len(e.dynaMock.BatchWriteItemExpect) > 0 {
-		x := e.dynaMock.BatchWriteItemExpect[0] //get first element of expectation
-
-		if x.input != nil {
-			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.BatchWriteItemExpect = append(e.dynaMock.BatchWriteItemExpect[:0], e.dynaMock.BatchWriteItemExpect[1:]...)
-
-		return x.output, nil
+// BatchWriteItemRequest - this func will be invoked when test running matching expectation with actual input
+func (e *MockDynamoDB) BatchWriteItemRequest(input *dynamodb.BatchWriteItemInput) dynamodb.BatchWriteItemRequest {
+	req := dynamodb.BatchWriteItemRequest{
+		Request: &aws.Request{
+			HTTPRequest: &http.Request{},
+		},
 	}
 
-	return nil, fmt.Errorf("Batch Write Item Expectation Not Found")
+	if len(e.dynaMock.BatchWriteItemExpect) == 0 {
+		req.Error = ErrNoExpectation
+
+		return req
+	}
+
+	x := e.dynaMock.BatchWriteItemExpect[0]
+
+	validateInput(input, req.Request)
+	validateItem(x.input, input.RequestItems, req.Request)
+	if req.Error != nil {
+		return req
+	}
+
+	e.dynaMock.BatchWriteItemExpect = append(e.dynaMock.BatchWriteItemExpect[:0], e.dynaMock.BatchWriteItemExpect[1:]...)
+
+	req.Data = x.output
+
+	return req
 }

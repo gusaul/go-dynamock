@@ -37,7 +37,7 @@ func TestGetItem(t *testing.T) {
 		},
 	}
 
-	Mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturn(result)
+	Mock.ExpectGetItem().Table("employee").WithKeys(expectKey).WillReturn(result)
 
 	actualResult, err := GetNameByID(ID)
 	if err != nil {

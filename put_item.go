@@ -2,15 +2,14 @@ package dynamock
 
 import (
 	"net/http"
-	"reflect"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-// ToTable - method for set Table expectation
-func (e *PutItemExpectation) ToTable(table string) *PutItemExpectation {
+// Table - method for set Table expectation
+func (e *PutItemExpectation) Table(table string) *PutItemExpectation {
 	e.table = &table
 	return e
 }
@@ -42,20 +41,11 @@ func (e *MockDynamoDB) PutItemRequest(input *dynamodb.PutItemInput) dynamodb.Put
 
 	x := e.dynaMock.PutItemExpect[0]
 
-	if x.table != nil {
-		if *x.table != *input.TableName {
-			req.Error = ErrTableExpectationMismatch
-
-			return req
-		}
-	}
-
-	if x.item != nil {
-		if !reflect.DeepEqual(x.item, input.Item) {
-			req.Error = ErrKeyExpectationMismatch
-
-			return req
-		}
+	validateInput(input, req.Request)
+	validateTable(x.table, input.TableName, req.Request)
+	validateItem(x.item, input.Item, req.Request)
+	if req.Error != nil {
+		return req
 	}
 
 	e.dynaMock.PutItemExpect = append(e.dynaMock.PutItemExpect[:0], e.dynaMock.PutItemExpect[1:]...)

@@ -18,88 +18,88 @@ func New() (dynamodbiface.ClientAPI, *DynaMock) {
 
 // ExpectGetItem - method to start do expectation
 func (e *DynaMock) ExpectGetItem() *GetItemExpectation {
-	getItemExpect := GetItemExpectation{table: nil, key: nil}
+	getItemExpect := new(GetItemExpectation)
 	e.GetItemExpect = append(e.GetItemExpect, getItemExpect)
 
-	return &e.GetItemExpect[len(e.GetItemExpect)-1]
+	return e.GetItemExpect[len(e.GetItemExpect)-1]
 }
 
 // ExpectBatchGetItem - method to start do expectation
 func (e *DynaMock) ExpectBatchGetItem() *BatchGetItemExpectation {
-	batchGetItemExpect := BatchGetItemExpectation{input: nil}
+	batchGetItemExpect := new(BatchGetItemExpectation)
 	e.BatchGetItemExpect = append(e.BatchGetItemExpect, batchGetItemExpect)
 
-	return &e.BatchGetItemExpect[len(e.BatchGetItemExpect)-1]
+	return e.BatchGetItemExpect[len(e.BatchGetItemExpect)-1]
 }
 
 // ExpectUpdateItem - method to start do expectation
 func (e *DynaMock) ExpectUpdateItem() *UpdateItemExpectation {
-	updateItemExpect := UpdateItemExpectation{attributeUpdates: nil, table: nil, key: nil}
+	updateItemExpect := new(UpdateItemExpectation)
 	e.UpdateItemExpect = append(e.UpdateItemExpect, updateItemExpect)
 
-	return &e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
+	return e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
 }
 
 // ExpectPutItem - method to start do expectation
 func (e *DynaMock) ExpectPutItem() *PutItemExpectation {
-	putItemExpect := PutItemExpectation{table: nil, item: nil}
+	putItemExpect := new(PutItemExpectation)
 	e.PutItemExpect = append(e.PutItemExpect, putItemExpect)
 
-	return &e.PutItemExpect[len(e.PutItemExpect)-1]
+	return e.PutItemExpect[len(e.PutItemExpect)-1]
 }
 
 // ExpectDeleteItem - method to start do expectation
 func (e *DynaMock) ExpectDeleteItem() *DeleteItemExpectation {
-	deleteItemExpect := DeleteItemExpectation{table: nil, key: nil}
+	deleteItemExpect := new(DeleteItemExpectation)
 	e.DeleteItemExpect = append(e.DeleteItemExpect, deleteItemExpect)
 
-	return &e.DeleteItemExpect[len(e.DeleteItemExpect)-1]
+	return e.DeleteItemExpect[len(e.DeleteItemExpect)-1]
 }
 
 // ExpectBatchWriteItem - method to start do expectation
 func (e *DynaMock) ExpectBatchWriteItem() *BatchWriteItemExpectation {
-	batchWriteItemExpect := BatchWriteItemExpectation{input: nil}
+	batchWriteItemExpect := new(BatchWriteItemExpectation)
 	e.BatchWriteItemExpect = append(e.BatchWriteItemExpect, batchWriteItemExpect)
 
-	return &e.BatchWriteItemExpect[len(e.BatchWriteItemExpect)-1]
+	return e.BatchWriteItemExpect[len(e.BatchWriteItemExpect)-1]
 }
 
 // ExpectCreateTable - method to start do expectation
 func (e *DynaMock) ExpectCreateTable() *CreateTableExpectation {
-	createTableExpect := CreateTableExpectation{keySchema: nil, table: nil}
+	createTableExpect := new(CreateTableExpectation)
 	e.CreateTableExpect = append(e.CreateTableExpect, createTableExpect)
 
-	return &e.CreateTableExpect[len(e.CreateTableExpect)-1]
+	return e.CreateTableExpect[len(e.CreateTableExpect)-1]
 }
 
 // ExpectDescribeTable - method to start do expectation
 func (e *DynaMock) ExpectDescribeTable() *DescribeTableExpectation {
-	describeTableExpect := DescribeTableExpectation{table: nil}
+	describeTableExpect := new(DescribeTableExpectation)
 	e.DescribeTableExpect = append(e.DescribeTableExpect, describeTableExpect)
 
-	return &e.DescribeTableExpect[len(e.DescribeTableExpect)-1]
+	return e.DescribeTableExpect[len(e.DescribeTableExpect)-1]
 }
 
 // ExpectWaitTableExist - method to start do expectation
 func (e *DynaMock) ExpectWaitTableExist() *WaitTableExistExpectation {
-	waitTableExistExpect := WaitTableExistExpectation{table: nil}
+	waitTableExistExpect := new(WaitTableExistExpectation)
 	e.WaitTableExistExpect = append(e.WaitTableExistExpect, waitTableExistExpect)
 
-	return &e.WaitTableExistExpect[len(e.WaitTableExistExpect)-1]
+	return e.WaitTableExistExpect[len(e.WaitTableExistExpect)-1]
 }
 
 // ExpectScan - method to start do expectation
 func (e *DynaMock) ExpectScan() *ScanExpectation {
-	ScanExpect := ScanExpectation{table: nil}
+	ScanExpect := new(ScanExpectation)
 	e.ScanExpect = append(e.ScanExpect, ScanExpect)
 
-	return &e.ScanExpect[len(e.ScanExpect)-1]
+	return e.ScanExpect[len(e.ScanExpect)-1]
 }
 
 // ExpectQuery - method to start do expectation
 func (e *DynaMock) ExpectQuery() *QueryExpectation {
-	queryExpect := QueryExpectation{table: nil}
+	queryExpect := new(QueryExpectation)
 	e.QueryExpect = append(e.QueryExpect, queryExpect)
 
-	return &e.QueryExpect[len(e.QueryExpect)-1]
+	return e.QueryExpect[len(e.QueryExpect)-1]
 }

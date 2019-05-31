@@ -1,9 +1,9 @@
 package dynamock
 
 import (
-	"fmt"
-	"reflect"
+	"net/http"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
@@ -14,39 +14,43 @@ func (e *CreateTableExpectation) Name(table string) *CreateTableExpectation {
 }
 
 // KeySchema - method for set KeySchema expectation
-func (e *CreateTableExpectation) KeySchema(keySchema []*dynamodb.KeySchemaElement) *CreateTableExpectation {
+func (e *CreateTableExpectation) KeySchema(keySchema []dynamodb.KeySchemaElement) *CreateTableExpectation {
 	e.keySchema = keySchema
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *CreateTableExpectation) WillReturns(res dynamodb.CreateTableOutput) *CreateTableExpectation {
-	e.output = &res
+// WillReturn - method for set desired result
+func (e *CreateTableExpectation) WillReturn(res dynamodb.CreateTableResponse) *CreateTableExpectation {
+	e.output = res.CreateTableOutput
 	return e
 }
 
-// CreateTable - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) CreateTable(input *dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error) {
-	if len(e.dynaMock.CreateTableExpect) > 0 {
-		x := e.dynaMock.CreateTableExpect[0] //get first element of expectation
-
-		if x.table != nil {
-			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
-			}
-		}
-
-		if x.keySchema != nil {
-			if !reflect.DeepEqual(x.keySchema, input.KeySchema) {
-				return nil, fmt.Errorf("Expect keySchema %+v but found keySchema %+v", x.keySchema, input.KeySchema)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.CreateTableExpect = append(e.dynaMock.CreateTableExpect[:0], e.dynaMock.CreateTableExpect[1:]...)
-
-		return x.output, nil
+// CreateTableRequest - this func will be invoked when test running matching expectation with actual input
+func (e *MockDynamoDB) CreateTableRequest(input *dynamodb.CreateTableInput) dynamodb.CreateTableRequest {
+	req := dynamodb.CreateTableRequest{
+		Request: &aws.Request{
+			HTTPRequest: &http.Request{},
+		},
 	}
 
-	return nil, fmt.Errorf("Create Table Expectation Not Found")
+	if len(e.dynaMock.CreateTableExpect) == 0 {
+		req.Error = ErrNoExpectation
+
+		return req
+	}
+
+	x := e.dynaMock.CreateTableExpect[0]
+
+	validateInput(input, req.Request)
+	validateTable(x.table, input.TableName, req.Request)
+	validateItem(x.keySchema, input.KeySchema, req.Request)
+	if req.Error != nil {
+		return req
+	}
+
+	e.dynaMock.CreateTableExpect = append(e.dynaMock.CreateTableExpect[:0], e.dynaMock.CreateTableExpect[1:]...)
+
+	req.Data = x.output
+
+	return req
 }

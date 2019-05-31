@@ -1,7 +1,9 @@
 package dynamock
 
 import (
-	"fmt"
+	"net/http"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
@@ -12,28 +14,37 @@ func (e *DescribeTableExpectation) Table(table string) *DescribeTableExpectation
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *DescribeTableExpectation) WillReturns(res dynamodb.DescribeTableOutput) *DescribeTableExpectation {
-	e.output = &res
+// WillReturn - method for set desired result
+func (e *DescribeTableExpectation) WillReturn(res dynamodb.DescribeTableResponse) *DescribeTableExpectation {
+	e.output = res.DescribeTableOutput
 	return e
 }
 
-// DescribeTable - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) DescribeTable(input *dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error) {
-	if len(e.dynaMock.DescribeTableExpect) > 0 {
-		x := e.dynaMock.DescribeTableExpect[0] //get first element of expectation
-
-		if x.table != nil {
-			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.DescribeTableExpect = append(e.dynaMock.DescribeTableExpect[:0], e.dynaMock.DescribeTableExpect[1:]...)
-
-		return x.output, nil
+// DescribeTableRequest - this func will be invoked when test running matching expectation with actual input
+func (e *MockDynamoDB) DescribeTableRequest(input *dynamodb.DescribeTableInput) dynamodb.DescribeTableRequest {
+	req := dynamodb.DescribeTableRequest{
+		Request: &aws.Request{
+			HTTPRequest: &http.Request{},
+		},
 	}
 
-	return nil, fmt.Errorf("Describe Table Expectation Not Found")
+	if len(e.dynaMock.DescribeTableExpect) == 0 {
+		req.Error = ErrNoExpectation
+
+		return req
+	}
+
+	x := e.dynaMock.DescribeTableExpect[0]
+
+	validateInput(input, req.Request)
+	validateTable(x.table, input.TableName, req.Request)
+	if req.Error != nil {
+		return req
+	}
+
+	e.dynaMock.DescribeTableExpect = append(e.dynaMock.DescribeTableExpect[:0], e.dynaMock.DescribeTableExpect[1:]...)
+
+	req.Data = x.output
+
+	return req
 }

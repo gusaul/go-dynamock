@@ -8,8 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-// ToTable - method for set Table expectation
-func (e *UpdateItemExpectation) ToTable(table string) *UpdateItemExpectation {
+// Table - method for set Table expectation
+func (e *UpdateItemExpectation) Table(table string) *UpdateItemExpectation {
 	e.table = &table
 	return e
 }

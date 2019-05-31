@@ -36,12 +36,10 @@ func (e *MockDynamoDB) QueryRequest(input *dynamodb.QueryInput) dynamodb.QueryRe
 
 	x := e.dynaMock.QueryExpect[0]
 
-	if x.table != nil {
-		if *x.table != *input.TableName {
-			req.Error = ErrTableExpectationMismatch
-
-			return req
-		}
+	validateInput(input, req.Request)
+	validateTable(x.table, input.TableName, req.Request)
+	if req.Error != nil {
+		return req
 	}
 
 	e.dynaMock.QueryExpect = append(e.dynaMock.QueryExpect[:0], e.dynaMock.QueryExpect[1:]...)

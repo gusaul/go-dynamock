@@ -1,62 +1,48 @@
 package dynamock
 
 import (
-	"context"
-	"fmt"
-	"reflect"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 // WithRequest - method for set Request expectation
-func (e *BatchGetItemExpectation) WithRequest(input map[string]*dynamodb.KeysAndAttributes) *BatchGetItemExpectation {
+func (e *BatchGetItemExpectation) WithRequest(input map[string]dynamodb.KeysAndAttributes) *BatchGetItemExpectation {
 	e.input = input
 	return e
 }
 
-// WillReturns - method for set desired result
-func (e *BatchGetItemExpectation) WillReturns(res dynamodb.BatchGetItemOutput) *BatchGetItemExpectation {
-	e.output = &res
+// WillReturn - method for set desired result
+func (e *BatchGetItemExpectation) WillReturn(res dynamodb.BatchGetItemResponse) *BatchGetItemExpectation {
+	e.output = res.BatchGetItemOutput
 	return e
 }
 
-// BatchGetItem - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamodb.BatchGetItemOutput, error) {
-	if len(e.dynaMock.BatchGetItemExpect) > 0 {
-		x := e.dynaMock.BatchGetItemExpect[0] //get first element of expectation
-
-		if x.input != nil {
-			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.BatchGetItemExpect = append(e.dynaMock.BatchGetItemExpect[:0], e.dynaMock.BatchGetItemExpect[1:]...)
-
-		return x.output, nil
+func (e *MockDynamoDB) BatchGetItemRequest(input *dynamodb.BatchGetItemInput) dynamodb.BatchGetItemRequest {
+	req := dynamodb.BatchGetItemRequest{
+		Request: &aws.Request{
+			HTTPRequest: &http.Request{},
+		},
 	}
 
-	return nil, fmt.Errorf("Batch Get Item Expectation Not Found")
-}
+	if len(e.dynaMock.BatchGetItemExpect) == 0 {
+		req.Error = ErrNoExpectation
 
-// BatchGetItemWithContext - this func will be invoked when test running matching expectation with actual input
-func (e *MockDynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.BatchGetItemInput, opt ...aws.Option) (*dynamodb.BatchGetItemOutput, error) {
-	if len(e.dynaMock.BatchGetItemExpect) > 0 {
-		x := e.dynaMock.BatchGetItemExpect[0] //get first element of expectation
-
-		if x.input != nil {
-			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
-			}
-		}
-
-		// delete first element of expectation
-		e.dynaMock.BatchGetItemExpect = append(e.dynaMock.BatchGetItemExpect[:0], e.dynaMock.BatchGetItemExpect[1:]...)
-
-		return x.output, nil
+		return req
 	}
 
-	return nil, fmt.Errorf("Batch Get Item With Context Expectation Not Found")
+	x := e.dynaMock.BatchGetItemExpect[0]
+
+	validateInput(input, req.Request)
+	validateItem(x.input, input.RequestItems, req.Request)
+	if req.Error != nil {
+		return req
+	}
+
+	e.dynaMock.BatchGetItemExpect = append(e.dynaMock.BatchGetItemExpect[:0], e.dynaMock.BatchGetItemExpect[1:]...)
+
+	req.Data = x.output
+
+	return req
 }

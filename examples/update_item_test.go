@@ -37,7 +37,7 @@ func TestUpdateItem(t *testing.T) {
 		},
 	}
 
-	Mock.ExpectUpdateItem().ToTable("employee").WithKeys(expectKey).WillReturn(result)
+	Mock.ExpectUpdateItem().Table("employee").WithKeys(expectKey).WillReturn(result)
 
 	actualResult, err := UpdateNameByID(ID, expectedResult)
 	if err != nil {
