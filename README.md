@@ -2,11 +2,6 @@
 # go-dynamock
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
-## Install
-```
-go get github.com/gusaul/go-dynamock
-```
-
 ## Examples Usage
 Visit [godoc](https://godoc.org/github.com/gusaul/go-dynamock) for general examples and public api reference.
 
@@ -16,23 +11,20 @@ First of all, change the dynamodb configuration to use the ***dynamodb interface
 package main
 
 import (
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/dynamodb"
-    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbiface"
 )
 
 type MyDynamo struct {
-    Db dynamodbiface.DynamoDBAPI
+    DB dynamodbiface.DynamoDBAPI
 }
 
 var Dyna *MyDynamo
 
 func ConfigureDynamoDB() {
-	Dyna = new(MyDynamo)
-	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("ap-southeast-2")})
-	svc := dynamodb.New(awsSession)
-	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
+    Dyna = new(MyDynamo)
+    Dyna.DB, Mock = dynamock.New()
 }
 ```
 the purpose of code above is to make your dynamoDB object can be mocked by ***dynamock*** through the dynamodbiface.
@@ -42,27 +34,43 @@ the purpose of code above is to make your dynamoDB object can be mocked by ***dy
 package main
 
 import (
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/service/dynamodb"
+    "context"
+    "strconv"
+    
+    "github.com/aws/aws-sdk-go-v2/aws"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
 )
 
-func GetName(id string) (*string, error) {
-	parameter := &dynamodb.GetItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
+func GetNameByID(ID int) (*string, error) {
+	param := &dynamodb.GetItemInput{
+		Key: map[string]dynamodb.AttributeValue{
 			"id": {
-				N: aws.String(id),
+				N: aws.String(strconv.Itoa(ID)),
 			},
 		},
 		TableName: aws.String("employee"),
 	}
 
-	response, err := Dyna.Db.GetItem(parameter)
+	req := Fake.DB.GetItemRequest(param)
+	if req.Error != nil {
+		return nil, req.Error
+	}
+
+	var value *string
+	output, err := req.Send(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
-	name := response.Item["name"].S
-	return name, nil
+	if v, ok := output.Item["name"]; ok {
+		err := dynamodbattribute.Unmarshal(&v, &value)
+		if err != nil {
+			return value, err
+		}
+	}
+
+	return value, nil
 }
 ```
 
@@ -71,58 +79,67 @@ func GetName(id string) (*string, error) {
 package examples
 
 import (
+	"strconv"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	dynamock "github.com/gusaul/go-dynamock"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-var mock *dynamock.DynaMock
-
 func init() {
-	Dyna = new(MyDynamo)
-	Dyna.Db, mock = dynamock.New()
+	Fake = new(FakeDynamo)
+	Fake.DB, Mock = dynamock.New()
 }
 
-func TestGetName(t *testing.T) {
-	expectKey := map[string]*dynamodb.AttributeValue{
+func TestGetItem(t *testing.T) {
+	ID := 123
+	expectKey := map[string]dynamodb.AttributeValue{
 		"id": {
-			N: aws.String("1"),
+			N: aws.String(strconv.Itoa(ID)),
 		},
 	}
 
-	expectedResult := aws.String("jaka")
-	result := dynamodb.GetItemOutput{
-		Item: map[string]*dynamodb.AttributeValue{
-			"name": {
-				S: expectedResult,
+	expectedResult := "rick sanchez"
+	result := dynamodb.GetItemResponse{
+		GetItemOutput: &dynamodb.GetItemOutput{
+			Item: map[string]dynamodb.AttributeValue{
+				"id": {
+					N: aws.String(strconv.Itoa(ID)),
+				},
+				"name": {
+					S: aws.String(expectedResult),
+				},
 			},
 		},
 	}
 
-	//lets start dynamock in action
-	mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
+	Mock.ExpectGetItem().Table("employee").WithKeys(expectKey).WillReturn(result)
 
-	actualResult, _ := GetName("1")
-	if actualResult != expectedResult {
-		t.Errorf("Test Fail")
+	actualResult, err := GetNameByID(ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if aws.StringValue(actualResult) != expectedResult {
+		t.Fatalf("Fail: expected: %s, got: %s", expectedResult, aws.StringValue(actualResult))
 	}
 }
 ```
 if you just wanna expect the table
 ``` go
-mock.ExpectGetItem().ToTable("employee").WillReturns(result)
+mock.ExpectGetItem().Table("employee").WillReturn(result)
 ```
 or maybe you didn't care with any arguments, you just need to determine the result
 ``` go
-mock.ExpectGetItem().WillReturns(result)
+mock.ExpectGetItem().WillReturn(result)
 ```
 and you can do multiple expectations at once, then the expectation will be executed sequentially.
 ``` go
-mock.ExpectGetItem().WillReturns(resultOne)
-mock.ExpectUpdateItem().WillReturns(resultTwo)
-mock.ExpectGetItem().WillReturns(resultThree)
+mock.ExpectGetItem().WillReturn(resultOne)
+mock.ExpectUpdateItem().WillReturn(resultTwo)
+mock.ExpectGetItem().WillReturn(resultThree)
 
 /* Result
 the first call of GetItem will return resultOne
@@ -131,26 +148,23 @@ and the only call of UpdateItem will return resultTwo */
 ```
 ### Currently Supported Functions
 ``` go
-CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error)
-DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error)
-GetItem(*dynamodb.GetItemInput) (*dynamodb.GetItemOutput, error)
-GetItemWithContext(aws.Context, *dynamodb.GetItemInput, ...request.Option) (*dynamodb.GetItemOutput, error)
-PutItem(*dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error)
-UpdateItem(*dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error)
-UpdateItemWithContext(aws.Context, *dynamodb.UpdateItemInput, ...request.Option) (*dynamodb.UpdateItemOutput, error)
-DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error)
-BatchGetItem(*dynamodb.BatchGetItemInput) (*dynamodb.BatchGetItemOutput, error)
-BatchGetItemWithContext(aws.Context, *dynamodb.BatchGetItemInput, ...request.Option) (*dynamodb.BatchGetItemOutput, error)
-BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
-WaitUntilTableExists(*dynamodb.DescribeTableInput) error
-Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
-Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error)
+GetItemRequest(*dynamodb.GetItemInput) dynamodb.GetItemRequest
+PutItemRequest(*dynamodb.PutItemInput) dynamodb.PutItemRequest
+UpdateItemRequest(*dynamodb.UpdateItemInput) dynamodb.UpdateItemRequest
+DeleteItemRequest(*dynamodb.DeleteItemInput) dynamodb.DeleteItemRequest
+BatchGetItemRequest(*dynamodb.BatchGetItemInput) dynamodb.BatchGetItemRequest
+BatchWriteItemRequest(*dynamodb.BatchWriteItemInput) dynamodb.BatchWriteItemRequest
+ScanRequest(*dynamodb.ScanInput) dynamodb.ScanRequest
+QueryRequest(*dynamodb.QueryInput) dynamodb.QueryRequest
+CreateTableRequest(*dynamodb.CreateTableInput) dynamodb.CreateTableRequest
+DescribeTableRequest(*dynamodb.DescribeTableInput) dynamodb.DescribeTableRequest
+WaitUntilTableExists(context.Context, *dynamodb.DescribeTableInput, ...aws.WaiterOption) error
 ```
 ## Contributions
 
 Feel free to open a pull request. Note, if you wish to contribute an extension to public (exported methods or types) -
 please open an issue before, to discuss whether these changes can be accepted. All backward incompatible changes are
-and will be treated cautiously
+and will be treated cautiously.
 
 ## License
 

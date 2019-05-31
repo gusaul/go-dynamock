@@ -25,6 +25,7 @@ func (e *GetItemExpectation) WillReturn(res dynamodb.GetItemResponse) *GetItemEx
 	return e
 }
 
+// GetItemRequest - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) GetItemRequest(input *dynamodb.GetItemInput) dynamodb.GetItemRequest {
 	req := dynamodb.GetItemRequest{
 		Request: &aws.Request{

@@ -19,6 +19,7 @@ func (e *BatchGetItemExpectation) WillReturn(res dynamodb.BatchGetItemResponse) 
 	return e
 }
 
+// BatchGetItemRequest - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) BatchGetItemRequest(input *dynamodb.BatchGetItemInput) dynamodb.BatchGetItemRequest {
 	req := dynamodb.BatchGetItemRequest{
 		Request: &aws.Request{

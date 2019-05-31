@@ -26,6 +26,7 @@ func (e *PutItemExpectation) WillReturn(res dynamodb.PutItemResponse) *PutItemEx
 	return e
 }
 
+// PutItemRequest - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) PutItemRequest(input *dynamodb.PutItemInput) dynamodb.PutItemRequest {
 	req := dynamodb.PutItemRequest{
 		Request: &aws.Request{

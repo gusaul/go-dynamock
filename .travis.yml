@@ -10,4 +10,4 @@ install:
     go get -t ./...
 
 script:
-    go test -v ./examples/
+    go test -v -parallel 2 ./examples/

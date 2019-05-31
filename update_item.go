@@ -26,13 +26,13 @@ func (e *UpdateItemExpectation) Updates(attrs map[string]dynamodb.AttributeValue
 	return e
 }
 
-// WillReturns - method for set desired result
+// WillReturn - method for set desired result
 func (e *UpdateItemExpectation) WillReturn(res dynamodb.UpdateItemResponse) *UpdateItemExpectation {
 	e.output = res.UpdateItemOutput
 	return e
 }
 
-// UpdateRequest - this func will be invoked when test running matching expectation with actual input
+// UpdateItemRequest - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) UpdateItemRequest(input *dynamodb.UpdateItemInput) dynamodb.UpdateItemRequest {
 	req := dynamodb.UpdateItemRequest{
 		Request: &aws.Request{
