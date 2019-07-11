@@ -103,3 +103,11 @@ func (e *DynaMock) ExpectQuery() *QueryExpectation {
 
 	return &e.QueryExpect[len(e.QueryExpect)-1]
 }
+
+// ExpectTransactWriteItems - method to start do expectation
+func (e *DynaMock) ExpectTransactWriteItems() *TransactWriteItemsExpectation {
+	transactWriteItemsExpect := TransactWriteItemsExpectation{table: nil}
+	e.TransactWriteItemsExpect = append(e.TransactWriteItemsExpect, transactWriteItemsExpect)
+
+	return &e.TransactWriteItemsExpect[len(e.TransactWriteItemsExpect)-1]
+}
