@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -41,4 +42,18 @@ func GetName(id string) (*string, error) {
 
 	name := response.Item["name"].S
 	return name, nil
+}
+
+// GetName - example func using GetItem method
+func GetTransactGetItems(id string) error {
+	parameter := &dynamodb.TransactWriteItemsInput{}
+
+	_, err := Dyna.Db.TransactWriteItems(parameter)
+
+	if err != nil {
+		 fmt.Print(err.Error())
+		 return err
+	}
+
+	return nil
 }

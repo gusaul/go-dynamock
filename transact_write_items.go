@@ -17,16 +17,19 @@ func (e *TransactWriteItemsExpectation) WillReturns(res dynamodb.TransactWriteIt
 	return e
 }
 
+// TransactWriteItems - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInput) (*dynamodb.TransactWriteItemsOutput, error){
 	if len(e.dynaMock.TransactWriteItemsExpect) > 0 {
 		x := e.dynaMock.TransactWriteItemsExpect[0] //get first element of expectation
 
 		foundTable := false
+
 		if x.table != nil {
 			for _, item := range input.TransactItems {
-				if x.table == item.Update.TableName || x.table == item.Put.TableName ||
-					x.table == item.Delete.TableName {
-					foundTable = true
+				if (item.Update != nil && x.table == item.Update.TableName) ||
+					(item.Put != nil && x.table == item.Put.TableName) ||
+					(item.Delete != nil && x.table == item.Delete.TableName) {
+						foundTable = true
 				}
 			}
 
@@ -35,7 +38,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 			}
 		}
 
-		// delete first element of expectation
+		//delete first element of expectation
 		e.dynaMock.TransactWriteItemsExpect = append(e.dynaMock.TransactWriteItemsExpect[:0],
 			e.dynaMock.TransactWriteItemsExpect[1:]...)
 
