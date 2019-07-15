@@ -38,7 +38,8 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 			}
 		}
 
-		//delete first element of expectation
+		// delete first element of expectation
+
 		e.dynaMock.TransactWriteItemsExpect = append(e.dynaMock.TransactWriteItemsExpect[:0],
 			e.dynaMock.TransactWriteItemsExpect[1:]...)
 
