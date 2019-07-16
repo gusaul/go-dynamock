@@ -25,6 +25,7 @@ type (
 		WaitTableExistExpect []WaitTableExistExpectation
 		ScanExpect           []ScanExpectation
 		QueryExpect          []QueryExpectation
+		TransactWriteItemsExpect  []TransactWriteItemsExpectation
 	}
 
 	// GetItemExpectation struct hold expectation field, err, and result
@@ -97,5 +98,11 @@ type (
 	QueryExpectation struct {
 		table  *string
 		output *dynamodb.QueryOutput
+	}
+
+	// TransactWriteItemExpectation struct holds field, err, and result
+	TransactWriteItemsExpectation struct {
+		table *string
+		output *dynamodb.TransactWriteItemsOutput
 	}
 )

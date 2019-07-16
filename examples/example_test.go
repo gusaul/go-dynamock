@@ -1,11 +1,11 @@
 package examples
 
 import (
+	dynamock "github.com/gusaul/go-dynamock"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	dynamock "github.com/gusaul/go-dynamock"
 )
 
 var mock *dynamock.DynaMock
@@ -37,5 +37,17 @@ func TestGetName(t *testing.T) {
 	actualResult, _ := GetName("1")
 	if actualResult != expectedResult {
 		t.Errorf("Test Fail")
+	}
+}
+
+func TestGetTransactGetItems(t *testing.T) {
+	databaseOutput := dynamodb.TransactWriteItemsOutput{}
+
+	mock.ExpectTransactWriteItems().Table("wrongTable").WillReturns(databaseOutput)
+
+	err := GetTransactGetItems("")
+
+	if err == nil {
+		t.Errorf("Test failed")
 	}
 }
