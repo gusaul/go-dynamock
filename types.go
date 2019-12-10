@@ -14,18 +14,18 @@ type (
 
 	// DynaMock mock struct hold all expectation types
 	DynaMock struct {
-		GetItemExpect        []GetItemExpectation
-		BatchGetItemExpect   []BatchGetItemExpectation
-		UpdateItemExpect     []UpdateItemExpectation
-		PutItemExpect        []PutItemExpectation
-		DeleteItemExpect     []DeleteItemExpectation
-		BatchWriteItemExpect []BatchWriteItemExpectation
-		CreateTableExpect    []CreateTableExpectation
-		DescribeTableExpect  []DescribeTableExpectation
-		WaitTableExistExpect []WaitTableExistExpectation
-		ScanExpect           []ScanExpectation
-		QueryExpect          []QueryExpectation
-		TransactWriteItemsExpect  []TransactWriteItemsExpectation
+		GetItemExpect            []GetItemExpectation
+		BatchGetItemExpect       []BatchGetItemExpectation
+		UpdateItemExpect         []UpdateItemExpectation
+		PutItemExpect            []PutItemExpectation
+		DeleteItemExpect         []DeleteItemExpectation
+		BatchWriteItemExpect     []BatchWriteItemExpectation
+		CreateTableExpect        []CreateTableExpectation
+		DescribeTableExpect      []DescribeTableExpectation
+		WaitTableExistExpect     []WaitTableExistExpectation
+		ScanExpect               []ScanExpectation
+		QueryExpect              []QueryExpectation
+		TransactWriteItemsExpect []TransactWriteItemsExpectation
 	}
 
 	// GetItemExpectation struct hold expectation field, err, and result
@@ -100,9 +100,9 @@ type (
 		output *dynamodb.QueryOutput
 	}
 
-	// TransactWriteItemExpectation struct holds field, err, and result
+	// TransactWriteItemsExpectation struct holds field, err, and result
 	TransactWriteItemsExpectation struct {
-		table *string
+		table  *string
 		output *dynamodb.TransactWriteItemsOutput
 	}
 )
