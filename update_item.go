@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
@@ -18,6 +19,12 @@ func (e *UpdateItemExpectation) ToTable(table string) *UpdateItemExpectation {
 // WithKeys - method for set Keys expectation
 func (e *UpdateItemExpectation) WithKeys(keys map[string]*dynamodb.AttributeValue) *UpdateItemExpectation {
 	e.key = keys
+	return e
+}
+
+// WithError - method for set errors expectation
+func (e *UpdateItemExpectation) WithError(err awserr.Error) *UpdateItemExpectation {
+	e.err = err
 	return e
 }
 
@@ -70,6 +77,11 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 
 		// delete first element of expectation
 		e.dynaMock.UpdateItemExpect = append(e.dynaMock.UpdateItemExpect[:0], e.dynaMock.UpdateItemExpect[1:]...)
+
+		// return the error if specified
+		if x.err != nil {
+			return nil, x.err
+		}
 
 		return x.output, nil
 	}

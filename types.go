@@ -1,6 +1,7 @@
 package dynamock
 
 import (
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
@@ -48,6 +49,7 @@ type (
 		key              map[string]*dynamodb.AttributeValue
 		table            *string
 		output           *dynamodb.UpdateItemOutput
+		err              awserr.Error
 	}
 
 	// PutItemExpectation struct hold expectation field, err, and result
