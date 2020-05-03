@@ -27,6 +27,12 @@ func (e *UpdateItemExpectation) Updates(attrs map[string]*dynamodb.AttributeValu
 	return e
 }
 
+// ExpressionAttributeValues - method for set ExpressionAttributeValues expectation
+func (e *UpdateItemExpectation) ExpressionAttributeValues(attrsValues map[string]*dynamodb.AttributeValue) *UpdateItemExpectation {
+	e.exprAttrValues = attrsValues
+	return e
+}
+
 // WillReturns - method for set desired result
 func (e *UpdateItemExpectation) WillReturns(res dynamodb.UpdateItemOutput) *UpdateItemExpectation {
 	e.output = &res
@@ -53,6 +59,12 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 		if x.attributeUpdates != nil {
 			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
 				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+			}
+		}
+
+		if x.exprAttrValues != nil {
+			if !reflect.DeepEqual(x.exprAttrValues, input.ExpressionAttributeValues) {
+				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.exprAttrValues, input.ExpressionAttributeValues)
 			}
 		}
 
