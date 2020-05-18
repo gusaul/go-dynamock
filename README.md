@@ -150,6 +150,8 @@ Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
 ScanWithContext(aws.Context, *dynamodb.ScanInput, ...request.Option) (*dynamodb.ScanOutput, error)
 Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error)
 QueryWithContext(aws.Context, *dynamodb.QueryInput, request.Option) (*dynamodb.QueryOutput, error)
+QueryPages(*dynamodb.QueryInput, func(*dynamodb.QueryOutput, bool) bool) error
+QueryPagesWithContext(aws.Context, *dynamodb.QueryInput, func(*dynamodb.QueryOutput, bool) bool, ...request.Option) error
 ```
 ## Contributions
 
