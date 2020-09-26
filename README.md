@@ -147,6 +147,8 @@ BatchWriteItem(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, e
 BatchWriteItemWithContext(aws.Context, *dynamodb.BatchWriteItemInput, ...request.Option) (*dynamodb.BatchWriteItemOutput, error)
 WaitUntilTableExists(*dynamodb.DescribeTableInput) error
 Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
+ScanPages(input *ScanInput, fn func(*ScanOutput, bool) bool) error
+ScanPagesWithContext(ctx aws.Context, input *ScanInput, fn func(*ScanOutput, bool) bool, opts ...request.Option) error
 ScanWithContext(aws.Context, *dynamodb.ScanInput, ...request.Option) (*dynamodb.ScanOutput, error)
 Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error)
 QueryWithContext(aws.Context, *dynamodb.QueryInput, request.Option) (*dynamodb.QueryOutput, error)
