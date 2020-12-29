@@ -43,7 +43,7 @@ type (
 
 	// UpdateItemExpectation struct hold expectation field, err, and result
 	UpdateItemExpectation struct {
-		attributeUpdates map[string]*dynamodb.AttributeValueUpdate
+		updateExpression *string
 		key              map[string]*dynamodb.AttributeValue
 		table            *string
 		output           *dynamodb.UpdateItemOutput

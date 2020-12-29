@@ -1,11 +1,11 @@
 package examples
 
 import (
-	dynamock "github.com/gusaul/go-dynamock"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/tredish/go-dynamock"
 )
 
 var mock *dynamock.DynaMock

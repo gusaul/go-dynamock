@@ -22,8 +22,8 @@ func (e *UpdateItemExpectation) WithKeys(keys map[string]*dynamodb.AttributeValu
 }
 
 // Updates - method for set Updates expectation
-func (e *UpdateItemExpectation) Updates(attrs map[string]*dynamodb.AttributeValueUpdate) *UpdateItemExpectation {
-	e.attributeUpdates = attrs
+func (e *UpdateItemExpectation) Updates(updateExpression *string) *UpdateItemExpectation {
+	e.updateExpression = updateExpression
 	return e
 }
 
@@ -50,9 +50,9 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 			}
 		}
 
-		if x.attributeUpdates != nil {
-			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+		if x.updateExpression != nil {
+			if !reflect.DeepEqual(x.updateExpression, input.UpdateExpression) {
+				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.updateExpression, input.UpdateExpression)
 			}
 		}
 
@@ -82,9 +82,9 @@ func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.Up
 			}
 		}
 
-		if x.attributeUpdates != nil {
-			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+		if x.updateExpression != nil {
+			if !reflect.DeepEqual(x.updateExpression, input.UpdateExpression) {
+				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.updateExpression, input.UpdateExpression)
 			}
 		}
 

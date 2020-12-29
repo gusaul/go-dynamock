@@ -34,7 +34,7 @@ func (e *DynaMock) ExpectBatchGetItem() *BatchGetItemExpectation {
 
 // ExpectUpdateItem - method to start do expectation
 func (e *DynaMock) ExpectUpdateItem() *UpdateItemExpectation {
-	updateItemExpect := UpdateItemExpectation{attributeUpdates: nil, table: nil, key: nil}
+	updateItemExpect := UpdateItemExpectation{updateExpression: nil, table: nil, key: nil}
 	e.UpdateItemExpect = append(e.UpdateItemExpect, updateItemExpect)
 
 	return &e.UpdateItemExpect[len(e.UpdateItemExpect)-1]
