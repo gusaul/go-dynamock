@@ -34,7 +34,7 @@ func (e *MockDynamoDB) BatchWriteItem(input *dynamodb.BatchWriteItemInput) (*dyn
 		}
 	}
 
-	return nil, fmt.Errorf("Batch Write Item Expectation Failed. Expected one of %+v to equal %+v", e.dynaMock.BatchWriteItemExpect, input.RequestItems)
+	return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Batch Write Item Expectation Failed. Expected one of %+v to equal %+v", e.dynaMock.BatchWriteItemExpect, input.RequestItems)
 }
 
 // BatchWriteItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -44,7 +44,7 @@ func (e *MockDynamoDB) BatchWriteItemWithContext(ctx aws.Context, input *dynamod
 
 		if x.input != nil {
 			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+				return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
 			}
 		}
 
@@ -54,5 +54,5 @@ func (e *MockDynamoDB) BatchWriteItemWithContext(ctx aws.Context, input *dynamod
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Batch Write Item Expectation Not Found")
+	return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Batch Write Item Expectation Not Found")
 }
