@@ -25,7 +25,7 @@ func (e *MockDynamoDB) DescribeTable(input *dynamodb.DescribeTableInput) (*dynam
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.DescribeTableOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
@@ -35,5 +35,5 @@ func (e *MockDynamoDB) DescribeTable(input *dynamodb.DescribeTableInput) (*dynam
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Describe Table Expectation Not Found")
+	return &dynamodb.DescribeTableOutput{}, fmt.Errorf("Describe Table Expectation Not Found")
 }
