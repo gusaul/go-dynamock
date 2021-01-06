@@ -36,7 +36,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 			}
 
 			if foundTable == false {
-				return nil, fmt.Errorf("Expect table %s not found", *x.table)
+				return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect table %s not found", *x.table)
 			}
 		}
 
@@ -48,7 +48,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Transact Write Items Table Expectation Not Found")
+	return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Transact Write Items Table Expectation Not Found")
 }
 
 func (e *MockDynamoDB) TransactWriteItemsWithContext(ctx aws.Context, input *dynamodb.TransactWriteItemsInput, opts ...request.Option) (*dynamodb.TransactWriteItemsOutput, error) {
@@ -67,7 +67,7 @@ func (e *MockDynamoDB) TransactWriteItemsWithContext(ctx aws.Context, input *dyn
 			}
 
 			if foundTable == false {
-				return nil, fmt.Errorf("Expect table %s not found", *x.table)
+				return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect table %s not found", *x.table)
 			}
 		}
 
@@ -79,5 +79,5 @@ func (e *MockDynamoDB) TransactWriteItemsWithContext(ctx aws.Context, input *dyn
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Transact Write Items Table With Context Expectation Not Found")
+	return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Transact Write Items Table With Context Expectation Not Found")
 }
