@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
@@ -45,7 +47,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 				}
 			}
 
-			// compare transact item - each item also contains the table name
+			// compare transact write item - each item also contains the table name
 			if !reflect.DeepEqual(x.items[i], item) {
 				return nil, fmt.Errorf("Expect item %+v at index %d but found item %+v", x.items[i], i, item)
 			}
@@ -59,4 +61,8 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 	}
 
 	return nil, fmt.Errorf("Transact Write Items Table Expectation Not Found")
+}
+
+func (e *MockDynamoDB) TransactWriteItemsWithContext(ctx aws.Context, input *dynamodb.TransactWriteItemsInput, opts ...request.Option) (*dynamodb.TransactWriteItemsOutput, error) {
+  return e.TransactWriteItems(input)
 }
