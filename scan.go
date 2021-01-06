@@ -27,7 +27,7 @@ func (e *MockDynamoDB) Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, er
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.ScanOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
@@ -37,7 +37,7 @@ func (e *MockDynamoDB) Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, er
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Scan Table Expectation Not Found")
+	return &dynamodb.ScanOutput{}, fmt.Errorf("Scan Table Expectation Not Found")
 }
 
 func (e *MockDynamoDB) ScanWithContext(ctx aws.Context, input *dynamodb.ScanInput, opts ...request.Option) (*dynamodb.ScanOutput, error) {
@@ -46,7 +46,7 @@ func (e *MockDynamoDB) ScanWithContext(ctx aws.Context, input *dynamodb.ScanInpu
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.ScanOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
@@ -56,5 +56,5 @@ func (e *MockDynamoDB) ScanWithContext(ctx aws.Context, input *dynamodb.ScanInpu
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Scan Table With Context Expectation Not Found")
+	return &dynamodb.ScanOutput{}, fmt.Errorf("Scan Table With Context Expectation Not Found")
 }
