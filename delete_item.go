@@ -34,13 +34,13 @@ func (e *MockDynamoDB) DeleteItem(input *dynamodb.DeleteItemInput) (*dynamodb.De
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return &dynamodb.DeleteItemInput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return &dynamodb.DeleteItemInput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
@@ -50,7 +50,7 @@ func (e *MockDynamoDB) DeleteItem(input *dynamodb.DeleteItemInput) (*dynamodb.De
 		return x.output, nil
 	}
 
-	return &dynamodb.DeleteItemInput{}, fmt.Errorf("Delete Item Expectation Not Found")
+	return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Delete Item Expectation Not Found")
 }
 
 // DeleteItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -60,13 +60,13 @@ func (e *MockDynamoDB) DeleteItemWithContext(ctx aws.Context, input *dynamodb.De
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return &dynamodb.DeleteItemInput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return &dynamodb.DeleteItemInput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
@@ -76,5 +76,5 @@ func (e *MockDynamoDB) DeleteItemWithContext(ctx aws.Context, input *dynamodb.De
 		return x.output, nil
 	}
 
-	return &dynamodb.DeleteItemInput{}, fmt.Errorf("Delete Item With Context Expectation Not Found")
+	return &dynamodb.DeleteItemOutput{}, fmt.Errorf("Delete Item With Context Expectation Not Found")
 }
