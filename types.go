@@ -103,6 +103,7 @@ type (
 	// TransactWriteItemsExpectation struct holds field, err, and result
 	TransactWriteItemsExpectation struct {
 		table  *string
+		items  []*dynamodb.TransactWriteItem
 		output *dynamodb.TransactWriteItemsOutput
 	}
 )
