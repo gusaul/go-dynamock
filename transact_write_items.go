@@ -48,7 +48,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 			}
 
 			// compare transact write item - each item also contains the table name
-			if x.items[i] != nill && !reflect.DeepEqual(x.items[i], item) {
+			if x.items[i] != nil && !reflect.DeepEqual(x.items[i], item) {
 				return nil, fmt.Errorf("Expect item %+v at index %d but found item %+v", x.items[i], i, item)
 			}
 		}
