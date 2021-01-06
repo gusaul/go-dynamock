@@ -28,7 +28,7 @@ func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamod
 
 		if x.input != nil {
 			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+				return &dynamodb.BatchGetItemOutput{}, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
 			}
 		}
 
@@ -38,7 +38,7 @@ func (e *MockDynamoDB) BatchGetItem(input *dynamodb.BatchGetItemInput) (*dynamod
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Batch Get Item Expectation Not Found")
+	return &dynamodb.BatchGetItemOutput{}, fmt.Errorf("Batch Get Item Expectation Not Found")
 }
 
 // BatchGetItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -48,7 +48,7 @@ func (e *MockDynamoDB) BatchGetItemWithContext(ctx aws.Context, input *dynamodb.
 
 		if x.input != nil {
 			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+				return &dynamodb.BatchGetItemOutput{}, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
 			}
 		}
 
@@ -58,5 +58,5 @@ func (e *MockDynamoDB) BatchGetItemWithContext(ctx aws.Context, input *dynamodb.
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Batch Get Item With Context Expectation Not Found")
+	return &dynamodb.BatchGetItemOutput{}, fmt.Errorf("Batch Get Item With Context Expectation Not Found")
 }
