@@ -34,7 +34,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 
 		// compare lengths
 		if len(x.items) != len(input.TransactItems) {
-			return nil, fmt.Errorf("Expect items %+v but found items %+v", x.items, input.TransactItems)
+			return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect items %+v but found items %+v", x.items, input.TransactItems)
 		}
 
 		for i, item := range input.TransactItems {
