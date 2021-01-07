@@ -34,7 +34,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 
 		// compare lengths
 		if len(x.items) != len(input.TransactItems) {
-			return nil, fmt.Errorf("Expect items %+v but found items %+v", x.items, input.TransactItems)
+			return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect items %+v but found items %+v", x.items, input.TransactItems)
 		}
 
 		for i, item := range input.TransactItems {
@@ -43,13 +43,13 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 				if (item.Update != nil && x.table != item.Update.TableName) ||
 					(item.Put != nil && x.table != item.Put.TableName) ||
 					(item.Delete != nil && x.table != item.Delete.TableName) {
-					return nil, fmt.Errorf("Expect table %s not found", *x.table)
+					return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect table %s not found", *x.table)
 				}
 			}
 
 			// compare transact write item - each item also contains the table name
 			if x.items[i] != nil && !reflect.DeepEqual(x.items[i], item) {
-				return nil, fmt.Errorf("Expect item %+v at index %d but found item %+v", x.items[i], i, item)
+				return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect item %+v at index %d but found item %+v", x.items[i], i, item)
 			}
 		}
 
@@ -60,7 +60,7 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Transact Write Items Table Expectation Not Found")
+	return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Transact Write Items Table Expectation Not Found")
 }
 
 func (e *MockDynamoDB) TransactWriteItemsWithContext(ctx aws.Context, input *dynamodb.TransactWriteItemsInput, opts ...request.Option) (*dynamodb.TransactWriteItemsOutput, error) {

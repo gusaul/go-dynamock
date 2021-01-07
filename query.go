@@ -27,7 +27,7 @@ func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput,
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.QueryOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
@@ -37,7 +37,7 @@ func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput,
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Query Table Expectation Not Found")
+	return &dynamodb.QueryOutput{}, fmt.Errorf("Query Table Expectation Not Found")
 }
 
 // QueryWithContext - this func will be invoked when test running matching expectation with actual input
@@ -47,7 +47,7 @@ func (e *MockDynamoDB) QueryWithContext(ctx aws.Context, input *dynamodb.QueryIn
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.QueryOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
@@ -57,7 +57,7 @@ func (e *MockDynamoDB) QueryWithContext(ctx aws.Context, input *dynamodb.QueryIn
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Query Table With Context Expectation Not Found")
+	return &dynamodb.QueryOutput{}, fmt.Errorf("Query Table With Context Expectation Not Found")
 }
 
 // QueryPages - this func will be invoked when test running matching expectation with actual input

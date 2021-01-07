@@ -46,13 +46,21 @@ func GetName(id string) (*string, error) {
 
 // GetName - example func using GetItem method
 func GetTransactGetItems(id string) error {
-	parameter := &dynamodb.TransactWriteItemsInput{}
+	parameter := &dynamodb.TransactWriteItemsInput{
+		TransactItems: []*dynamodb.TransactWriteItem{
+			{
+				Put: &dynamodb.Put{
+					TableName: aws.String("my_table"),
+				},
+			},
+		},
+	}
 
 	_, err := Dyna.Db.TransactWriteItems(parameter)
 
 	if err != nil {
-		 fmt.Print(err.Error())
-		 return err
+		fmt.Print(err.Error())
+		return err
 	}
 
 	return nil

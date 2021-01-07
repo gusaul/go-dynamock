@@ -40,19 +40,19 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
 		if x.attributeUpdates != nil {
 			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
 			}
 		}
 
@@ -62,7 +62,7 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Update Item Expectation Not Found")
+	return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Update Item Expectation Not Found")
 }
 
 // UpdateItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -72,19 +72,19 @@ func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.Up
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
 		if x.attributeUpdates != nil {
 			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
 			}
 		}
 
@@ -94,5 +94,5 @@ func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.Up
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Update Item With Context Expectation Not Found")
+	return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Update Item With Context Expectation Not Found")
 }
