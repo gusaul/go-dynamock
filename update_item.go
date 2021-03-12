@@ -21,6 +21,30 @@ func (e *UpdateItemExpectation) WithKeys(keys map[string]*dynamodb.AttributeValu
 	return e
 }
 
+// WithConditionExpression - method for setting a ConditionExpression expectation
+func (e *UpdateItemExpectation) WithConditionExpression(expr *string) *UpdateItemExpectation {
+	e.conditionExpression = expr
+	return e
+}
+
+// WithExpressionAttributeNames - method for setting a ExpressionAttributeNames expectation
+func (e *UpdateItemExpectation) WithExpressionAttributeNames(names map[string]*string) *UpdateItemExpectation {
+	e.expressionAttributeNames = names
+	return e
+}
+
+// WithExpressionAttributeValues - method for setting a ExpressionAttributeValues expectation
+func (e *UpdateItemExpectation) WithExpressionAttributeValues(attrs map[string]*dynamodb.AttributeValue) *UpdateItemExpectation {
+	e.expressionAttributeValues = attrs
+	return e
+}
+
+// WithUpdateExpression - method for setting a UpdateExpression expectation
+func (e *UpdateItemExpectation) WithUpdateExpression(expr *string) *UpdateItemExpectation {
+	e.updateExpression = expr
+	return e
+}
+
 // Updates - method for set Updates expectation
 func (e *UpdateItemExpectation) Updates(attrs map[string]*dynamodb.AttributeValueUpdate) *UpdateItemExpectation {
 	e.attributeUpdates = attrs
@@ -53,6 +77,30 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 		if x.attributeUpdates != nil {
 			if !reflect.DeepEqual(x.attributeUpdates, input.AttributeUpdates) {
 				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.attributeUpdates, input.AttributeUpdates)
+			}
+		}
+
+		if x.conditionExpression != nil {
+			if !reflect.DeepEqual(x.conditionExpression, input.ConditionExpression) {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.conditionExpression, input.ConditionExpression)
+			}
+		}
+
+		if x.expressionAttributeNames != nil {
+			if !reflect.DeepEqual(x.expressionAttributeNames, input.ExpressionAttributeNames) {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.expressionAttributeNames, input.ExpressionAttributeNames)
+			}
+		}
+
+		if x.expressionAttributeValues != nil {
+			if !reflect.DeepEqual(x.expressionAttributeValues, input.ExpressionAttributeValues) {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.expressionAttributeValues, input.ExpressionAttributeValues)
+			}
+		}
+
+		if x.updateExpression != nil {
+			if !reflect.DeepEqual(x.updateExpression, input.UpdateExpression) {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.updateExpression, input.UpdateExpression)
 			}
 		}
 
