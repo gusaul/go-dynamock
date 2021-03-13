@@ -1,7 +1,7 @@
 package examples
 
 import (
-	dynamock "github.com/caldwecr/go-dynamock"
+	dynamock "github.com/gusaul/go-dynamock"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
