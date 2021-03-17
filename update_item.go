@@ -56,6 +56,12 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 			}
 		}
 
+		if x.expressionAttributeValues != nil {
+			if !reflect.DeepEqual(x.expressionAttributeValues, input.ExpressionAttributeValues) {
+				return nil, fmt.Errorf("Expect values %+v but found values %+v", x.expressionAttributeValues, input.ExpressionAttributeValues)
+			}
+		}
+
 		// delete first element of expectation
 		e.dynaMock.UpdateItemExpect = append(e.dynaMock.UpdateItemExpect[:0], e.dynaMock.UpdateItemExpect[1:]...)
 
