@@ -221,3 +221,49 @@ func Test_extractRemovePath(t *testing.T) {
 		})
 	}
 }
+
+func Test_parsedUpdateExpression_CheckIsEquivalentTo(t *testing.T) {
+	type args struct {
+		p     string
+		other string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"equivalent expressions do not return an error",
+			args{
+				"ADD foobar 5, dog 7 ",
+				"ADD dog 7, foobar 5",
+			},
+			false,
+		},
+		{
+			"non-equivalent expressions return an error",
+			args{
+				"ADD foobar 5, dog 7 ",
+				"ADD cat 7, foobar 5",
+			},
+			true,
+		},
+		{
+			"non-equivalent expressions with equivalent paths return an error",
+			args{
+				"ADD foobar 5, dog 7 ",
+				"ADD dog 7, foobar 99",
+			},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pExpr := parseUpdateExpression(tt.args.p)
+			otherExpr := parseUpdateExpression(tt.args.other)
+			if err := pExpr.CheckIsEquivalentTo(&otherExpr); (err != nil) != tt.wantErr {
+				t.Errorf("CheckIsEquivalentTo() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
