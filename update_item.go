@@ -2,11 +2,13 @@ package dynamock
 
 import (
 	"fmt"
-	"reflect"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"reflect"
+	"regexp"
+	"sort"
+	"strings"
 )
 
 // ToTable - method for set Table expectation
@@ -42,6 +44,11 @@ func (e *UpdateItemExpectation) WithExpressionAttributeValues(attrs map[string]*
 // WithUpdateExpression - method for setting a UpdateExpression expectation
 func (e *UpdateItemExpectation) WithUpdateExpression(expr *string) *UpdateItemExpectation {
 	e.updateExpression = expr
+	return e
+}
+
+func (e *UpdateItemExpectation) WithSetAttributeValueExpression(expr *string) *UpdateItemExpectation {
+	e.setAttributeValueExpression = expr
 	return e
 }
 
@@ -104,6 +111,10 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 			}
 		}
 
+		if x.setAttributeValueExpression != nil {
+
+		}
+
 		// delete first element of expectation
 		e.dynaMock.UpdateItemExpect = append(e.dynaMock.UpdateItemExpect[:0], e.dynaMock.UpdateItemExpect[1:]...)
 
@@ -111,6 +122,91 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 	}
 
 	return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Update Item Expectation Not Found")
+}
+
+type parsedUpdateExpression struct {
+	ADDExpressions    []addExpression
+	DELETEExpressions []string
+	REMOVEExpressions []string
+	SETExpressions    []string
+}
+
+type operation string
+
+const (
+	ADD    operation = "ADD"
+	DELETE operation = "DELETE"
+	REMOVE operation = "REMOVE"
+	SET    operation = "SET"
+)
+
+type operationIndexTuple struct {
+	Index     int
+	Operation operation
+}
+
+type addExpression struct {
+	path  string
+	value string
+}
+
+func extractAddPathValuePairs(addExpr string) []addExpression {
+	re := regexp.MustCompile(`ADD\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+	subMatchRe := regexp.MustCompile(`(\S+)\s+([\w:]+)\s*,?\s*`)
+	subMatches := re.FindStringSubmatch(addExpr)
+	var result []addExpression
+	if subMatches == nil {
+		return result
+	}
+
+	pairMatches := subMatchRe.FindAllStringSubmatch(subMatches[1], -1)
+	if pairMatches == nil {
+		return result
+	}
+	for _, subMatch := range pairMatches {
+		result = append(result, addExpression{subMatch[1], subMatch[2]})
+	}
+	return result
+}
+
+func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
+	addOp := operationIndexTuple{strings.Index(updateExpression, "ADD"), ADD}
+	deleteOp := operationIndexTuple{strings.Index(updateExpression, "DELETE"), DELETE}
+	removeOp := operationIndexTuple{strings.Index(updateExpression, "REMOVE"), REMOVE}
+	setOp := operationIndexTuple{strings.Index(updateExpression, "SET"), SET}
+
+	ops := []operationIndexTuple{
+		addOp,
+		deleteOp,
+		removeOp,
+		setOp,
+	}
+	sort.Slice(ops, func(i, j int) bool {
+		return ops[i].Index < ops[j].Index
+	})
+
+	result := parsedUpdateExpression{}
+	for opIdx, op := range ops {
+		if op.Index < 0 {
+			// op.Index should be -1 for operations that are not present in an update expression
+			continue
+		}
+		// get the substring for the operation
+		var substr string
+		if opIdx+1 < len(ops) {
+			// We don't need to worry about the case where (opIdx+1).Index is -1, because we're iterating through a
+			// ascending sorted array.
+			substr = updateExpression[op.Index:ops[opIdx+1].Index]
+		} else {
+			substr = updateExpression[op.Index:]
+		}
+		// apply the operation specific parsing
+		switch op.Operation {
+		case ADD:
+			result.ADDExpressions = extractAddPathValuePairs(substr)
+		}
+	}
+	return result
 }
 
 // UpdateItemWithContext - this func will be invoked when test running matching expectation with actual input
