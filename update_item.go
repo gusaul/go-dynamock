@@ -125,8 +125,8 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 }
 
 type parsedUpdateExpression struct {
-	ADDExpressions    []addExpression
-	DELETEExpressions []string
+	ADDExpressions    []pathValueExpression
+	DELETEExpressions []pathValueExpression
 	REMOVEExpressions []string
 	SETExpressions    []string
 }
@@ -145,16 +145,27 @@ type operationIndexTuple struct {
 	Operation operation
 }
 
-type addExpression struct {
+type pathValueExpression struct {
 	path  string
 	value string
 }
 
-func extractAddPathValuePairs(addExpr string) []addExpression {
-	re := regexp.MustCompile(`ADD\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+func mustExtractPathValueExpressions(operation operation, expr string) []pathValueExpression {
+	var re *regexp.Regexp
+	var result []pathValueExpression
+	switch operation {
+	case ADD:
+		re = regexp.MustCompile(`ADD\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+	case DELETE:
+		re = regexp.MustCompile(`DELETE\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+	}
+	if re == nil {
+		return result
+	}
+
 	subMatchRe := regexp.MustCompile(`(\S+)\s+([\w:]+)\s*,?\s*`)
-	subMatches := re.FindStringSubmatch(addExpr)
-	var result []addExpression
+	subMatches := re.FindStringSubmatch(expr)
+
 	if subMatches == nil {
 		return result
 	}
@@ -164,9 +175,17 @@ func extractAddPathValuePairs(addExpr string) []addExpression {
 		return result
 	}
 	for _, subMatch := range pairMatches {
-		result = append(result, addExpression{subMatch[1], subMatch[2]})
+		result = append(result, pathValueExpression{subMatch[1], subMatch[2]})
 	}
 	return result
+}
+
+func extractAddPathValuePairs(addExpr string) []pathValueExpression {
+	return mustExtractPathValueExpressions(ADD, addExpr)
+}
+
+func extractDeletePathValuePairs(deleteExpr string) []pathValueExpression {
+	return mustExtractPathValueExpressions(DELETE, deleteExpr)
 }
 
 func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
@@ -204,6 +223,8 @@ func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
 		switch op.Operation {
 		case ADD:
 			result.ADDExpressions = extractAddPathValuePairs(substr)
+		case DELETE:
+			result.DELETEExpressions = extractDeletePathValuePairs(substr)
 		}
 	}
 	return result

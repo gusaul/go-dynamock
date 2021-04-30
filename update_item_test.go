@@ -5,39 +5,40 @@ import (
 	"testing"
 )
 
-func Test_extractAddPathValuePairs(t *testing.T) {
+func Test_mustExtractPathValueExpressions(t *testing.T) {
 	type args struct {
-		addExpr string
+		operation operation
+		addExpr   string
 	}
 	tests := []struct {
 		name string
 		args args
-		want []addExpression
+		want []pathValueExpression
 	}{
 		{
-			"no ADD in expression produces empty result",
-			args{"SET foo = 3"},
-			[]addExpression{},
+			"no ADD or DELETE in expression produces empty result",
+			args{SET, "SET foo = 3"},
+			[]pathValueExpression{},
 		},
 		{
 			"ADD with single pair captures correct pair",
-			args{"ADD foobar 3"},
-			[]addExpression{{"foobar", "3"}},
+			args{ADD, "ADD foobar 3"},
+			[]pathValueExpression{{"foobar", "3"}},
 		},
 		{
 			"ADD with single pair and trailing comma captures correct pair",
-			args{"ADD foobar 3 ,"},
-			[]addExpression{{"foobar", "3"}},
+			args{ADD, "ADD foobar 3 ,"},
+			[]pathValueExpression{{"foobar", "3"}},
 		},
 		{
 			"ADD with single pair and trailing whitespace captures correct pair",
-			args{"ADD foobar 3   "},
-			[]addExpression{{"foobar", "3"}},
+			args{ADD, "ADD foobar 3   "},
+			[]pathValueExpression{{"foobar", "3"}},
 		},
 		{
 			"ADD with multiple pairs captures the pairs",
-			args{"ADD foobar 3, bazdog 7, chicken 8"},
-			[]addExpression{
+			args{ADD, "ADD foobar 3, bazdog 7, chicken 8"},
+			[]pathValueExpression{
 				{"foobar", "3"},
 				{"bazdog", "7"},
 				{"chicken", "8"},
@@ -45,17 +46,22 @@ func Test_extractAddPathValuePairs(t *testing.T) {
 		},
 		{
 			"ADD with multiple pairs and curious whitespace",
-			args{"ADD 	  foobar   	3  ,   bazdog 7   ,chicken     8"},
-			[]addExpression{
+			args{ADD, "ADD 	  foobar   	3  ,   bazdog 7   ,chicken     8"},
+			[]pathValueExpression{
 				{"foobar", "3"},
 				{"bazdog", "7"},
 				{"chicken", "8"},
 			},
 		},
+		{
+			"DELETE with single pair and trailing comma captures correct pair",
+			args{DELETE, "DELETE foobar 3 ,"},
+			[]pathValueExpression{{"foobar", "3"}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := extractAddPathValuePairs(tt.args.addExpr)
+			got := mustExtractPathValueExpressions(tt.args.operation, tt.args.addExpr)
 			if len(got) != len(tt.want) {
 				t.Errorf("extractAddPathValuePairs() len = %v, wanted len %v", len(got), len(tt.want))
 				return
@@ -83,11 +89,40 @@ func Test_parseUpdateExpression(t *testing.T) {
 			"ADD expression only has only Add expressions",
 			args{"ADD foobar 3, dog 76"},
 			parsedUpdateExpression{
-				ADDExpressions: []addExpression{
+				ADDExpressions: []pathValueExpression{
 					{"foobar", "3"},
 					{"dog", "76"},
 				},
 				DELETEExpressions: nil,
+				REMOVEExpressions: nil,
+				SETExpressions:    nil,
+			},
+		},
+		{
+			"DELETE expression only has only Delete expressions",
+			args{"DELETE foobar 5, cat 6"},
+			parsedUpdateExpression{
+				ADDExpressions: nil,
+				DELETEExpressions: []pathValueExpression{
+					{"foobar", "5"},
+					{"cat", "6"},
+				},
+				REMOVEExpressions: nil,
+				SETExpressions:    nil,
+			},
+		},
+		{
+			"ADD and DELETE expressions are extracted correctly",
+			args{"ADD abc 1, def 2 DELETE ghi 3, jkl 4"},
+			parsedUpdateExpression{
+				ADDExpressions: []pathValueExpression{
+					{"abc", "1"},
+					{"def", "2"},
+				},
+				DELETEExpressions: []pathValueExpression{
+					{"ghi", "3"},
+					{"jkl", "4"},
+				},
 				REMOVEExpressions: nil,
 				SETExpressions:    nil,
 			},
