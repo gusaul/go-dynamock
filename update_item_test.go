@@ -8,7 +8,7 @@ import (
 func Test_mustExtractPathValueExpressions(t *testing.T) {
 	type args struct {
 		operation operation
-		addExpr   string
+		expr      string
 	}
 	tests := []struct {
 		name string
@@ -16,8 +16,8 @@ func Test_mustExtractPathValueExpressions(t *testing.T) {
 		want []pathValueExpression
 	}{
 		{
-			"no ADD or DELETE in expression produces empty result",
-			args{SET, "SET foo = 3"},
+			"no matching expression produces empty result",
+			args{ADD, "SET foo = 3"},
 			[]pathValueExpression{},
 		},
 		{
@@ -58,17 +58,44 @@ func Test_mustExtractPathValueExpressions(t *testing.T) {
 			args{DELETE, "DELETE foobar 3 ,"},
 			[]pathValueExpression{{"foobar", "3"}},
 		},
+		{
+			"SET with single pair captures correct pair",
+			args{SET, "SET foobar = 3"},
+			[]pathValueExpression{{"foobar", "3"}},
+		},
+		{
+			"SET with multiple pairs captures the pairs",
+			args{SET, "SET foobar= 3, bazdog     =7, chicken=8    "},
+			[]pathValueExpression{
+				{"foobar", "3"},
+				{"bazdog", "7"},
+				{"chicken", "8"},
+			},
+		},
+		{
+			"SET with single pair including function captures correct pair",
+			args{SET, "SET foobar = list_append(:vals, #ri)"},
+			[]pathValueExpression{{"foobar", "list_append(:vals, #ri)"}},
+		},
+		{
+			"SET with multiple pairs including function captures correct pair",
+			args{SET, "SET dog = :food, foobar = list_append(:vals, #ri)"},
+			[]pathValueExpression{
+				{"dog", ":food"},
+				{"foobar", "list_append(:vals, #ri)"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := mustExtractPathValueExpressions(tt.args.operation, tt.args.addExpr)
+			got := mustExtractPathValueExpressions(tt.args.operation, tt.args.expr)
 			if len(got) != len(tt.want) {
-				t.Errorf("extractAddPathValuePairs() len = %v, wanted len %v", len(got), len(tt.want))
+				t.Errorf("mustExtractPathValueExpressions() len = %v, wanted len %v", len(got), len(tt.want))
 				return
 			}
 			for idx, pair := range got {
 				if !reflect.DeepEqual(pair, tt.want[idx]) {
-					t.Errorf("extractAddPathValuePairs() %vth item got: %v, want: %v", idx, pair, tt.want[idx])
+					t.Errorf("mustExtractPathValueExpressions() %vth item got: %v, want: %v", idx, pair, tt.want[idx])
 					return
 				}
 			}
@@ -125,6 +152,19 @@ func Test_parseUpdateExpression(t *testing.T) {
 				},
 				REMOVEExpressions: nil,
 				SETExpressions:    nil,
+			},
+		},
+		{
+			"SET expression only has only Set expressions",
+			args{"SET foobar = 5, cat = list_append(:vals, #ri)"},
+			parsedUpdateExpression{
+				ADDExpressions:    nil,
+				DELETEExpressions: nil,
+				REMOVEExpressions: nil,
+				SETExpressions: []pathValueExpression{
+					{"foobar", "5"},
+					{"cat", "list_append(:vals, #ri)"},
+				},
 			},
 		},
 	}

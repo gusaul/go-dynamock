@@ -128,7 +128,7 @@ type parsedUpdateExpression struct {
 	ADDExpressions    []pathValueExpression
 	DELETEExpressions []pathValueExpression
 	REMOVEExpressions []string
-	SETExpressions    []string
+	SETExpressions    []pathValueExpression
 }
 
 type operation string
@@ -152,18 +152,28 @@ type pathValueExpression struct {
 
 func mustExtractPathValueExpressions(operation operation, expr string) []pathValueExpression {
 	var re *regexp.Regexp
+	var subMatchRe *regexp.Regexp
 	var result []pathValueExpression
 	switch operation {
 	case ADD:
-		re = regexp.MustCompile(`ADD\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+		re = regexp.MustCompile(`ADD\s+((\S+\s+[\w:#]+\s*,?\s*)+)`)
+		subMatchRe = regexp.MustCompile(`(\S+)\s+([\w:#]+)\s*,?\s*`)
 	case DELETE:
-		re = regexp.MustCompile(`DELETE\s+((\S+\s+[\w:]+\s*,?\s*)+)`)
+		re = regexp.MustCompile(`DELETE\s+((\S+\s+[\w:#]+\s*,?\s*)+)`)
+		subMatchRe = regexp.MustCompile(`(\S+)\s+([\w:#]+)\s*,?\s*`)
+	case SET:
+		// SET operations allow the value to two operands with a + or - in between them
+		// SET operations allow the operand to be a function such as `SET #ri = list_append(#ri, :vals)`
+		re = regexp.MustCompile(`SET\s+((\S+\s*=\s*[\w:#\(\)\+-,\s=]+\s*,?\s*)+)`)
+		subMatchRe = regexp.MustCompile(`(\S+)\s*=\s*([\w:#\+-]+(\([\w\s,:#]*\))?)\s*,?\s*`)
 	}
 	if re == nil {
 		return result
 	}
+	if subMatchRe == nil {
+		return result
+	}
 
-	subMatchRe := regexp.MustCompile(`(\S+)\s+([\w:]+)\s*,?\s*`)
 	subMatches := re.FindStringSubmatch(expr)
 
 	if subMatches == nil {
@@ -186,6 +196,10 @@ func extractAddPathValuePairs(addExpr string) []pathValueExpression {
 
 func extractDeletePathValuePairs(deleteExpr string) []pathValueExpression {
 	return mustExtractPathValueExpressions(DELETE, deleteExpr)
+}
+
+func extractSetPathValuePairs(setExpr string) []pathValueExpression {
+	return mustExtractPathValueExpressions(SET, setExpr)
 }
 
 func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
@@ -225,6 +239,8 @@ func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
 			result.ADDExpressions = extractAddPathValuePairs(substr)
 		case DELETE:
 			result.DELETEExpressions = extractDeletePathValuePairs(substr)
+		case SET:
+			result.SETExpressions = extractSetPathValuePairs(substr)
 		}
 	}
 	return result
