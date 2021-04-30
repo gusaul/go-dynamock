@@ -167,11 +167,56 @@ func Test_parseUpdateExpression(t *testing.T) {
 				},
 			},
 		},
+		{
+			"REMOVE expression only has only Remove expressions",
+			args{"REMOVE RelatedItems[1], RelatedItems[2]"},
+			parsedUpdateExpression{
+				ADDExpressions:    nil,
+				DELETEExpressions: nil,
+				REMOVEExpressions: []pathExpression{
+					{"RelatedItems[1]"},
+					{"RelatedItems[2]"},
+				},
+				SETExpressions: nil,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := parseUpdateExpression(tt.args.updateExpression); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parseUpdateExpression() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_extractRemovePath(t *testing.T) {
+	type args struct {
+		removeExpr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []pathExpression
+	}{
+		{
+			"extracting a single Remove path works correctly",
+			args{"REMOVE RelatedItems[1]"},
+			[]pathExpression{{"RelatedItems[1]"}},
+		},
+		{
+			"extracting multiple Remove paths works correctly",
+			args{"REMOVE RelatedItems[1], RelatedItems[2]"},
+			[]pathExpression{
+				{"RelatedItems[1]"},
+				{"RelatedItems[2]"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := extractRemovePath(tt.args.removeExpr); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("extractRemovePath() = %v, want %v", got, tt.want)
 			}
 		})
 	}

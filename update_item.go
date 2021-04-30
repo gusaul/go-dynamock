@@ -127,7 +127,7 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 type parsedUpdateExpression struct {
 	ADDExpressions    []pathValueExpression
 	DELETEExpressions []pathValueExpression
-	REMOVEExpressions []string
+	REMOVEExpressions []pathExpression
 	SETExpressions    []pathValueExpression
 }
 
@@ -148,6 +148,10 @@ type operationIndexTuple struct {
 type pathValueExpression struct {
 	path  string
 	value string
+}
+
+type pathExpression struct {
+	path string
 }
 
 func mustExtractPathValueExpressions(operation operation, expr string) []pathValueExpression {
@@ -198,6 +202,24 @@ func extractDeletePathValuePairs(deleteExpr string) []pathValueExpression {
 	return mustExtractPathValueExpressions(DELETE, deleteExpr)
 }
 
+func extractRemovePath(removeExpr string) []pathExpression {
+	re := regexp.MustCompile(`REMOVE\s+(([\w:#\[\]]+\s*,?\s*)+)`)
+	subMatchRe := regexp.MustCompile(`\s*([\w:#\[\]]+)\s*,?\s*`)
+	subMatches := re.FindStringSubmatch(removeExpr)
+	var result []pathExpression
+	if subMatches == nil {
+		return result
+	}
+	pairMatches := subMatchRe.FindAllStringSubmatch(subMatches[1], -1)
+	if pairMatches == nil {
+		return result
+	}
+	for _, subMatch := range pairMatches {
+		result = append(result, pathExpression{subMatch[1]})
+	}
+	return result
+}
+
 func extractSetPathValuePairs(setExpr string) []pathValueExpression {
 	return mustExtractPathValueExpressions(SET, setExpr)
 }
@@ -239,6 +261,8 @@ func parseUpdateExpression(updateExpression string) parsedUpdateExpression {
 			result.ADDExpressions = extractAddPathValuePairs(substr)
 		case DELETE:
 			result.DELETEExpressions = extractDeletePathValuePairs(substr)
+		case REMOVE:
+			result.REMOVEExpressions = extractRemovePath(substr)
 		case SET:
 			result.SETExpressions = extractSetPathValuePairs(substr)
 		}
