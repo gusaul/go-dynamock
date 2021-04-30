@@ -47,8 +47,9 @@ func (e *UpdateItemExpectation) WithUpdateExpression(expr *string) *UpdateItemEx
 	return e
 }
 
-func (e *UpdateItemExpectation) WithSetAttributeValueExpression(expr *string) *UpdateItemExpectation {
-	e.setAttributeValueExpression = expr
+func (e *UpdateItemExpectation) WithEquivalentUpdateExpression(expr *string) *UpdateItemExpectation {
+	parsed := parseUpdateExpression(*expr)
+	e.equivalentUpdateExpression = &parsed
 	return e
 }
 
@@ -111,8 +112,12 @@ func (e *MockDynamoDB) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.Up
 			}
 		}
 
-		if x.setAttributeValueExpression != nil {
-
+		if x.equivalentUpdateExpression != nil {
+			inputExpr := parseUpdateExpression(*input.UpdateExpression)
+			err := x.equivalentUpdateExpression.CheckIsEquivalentTo(&inputExpr)
+			if err != nil {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("non-equivalent update expressions found: %v", err)
+			}
 		}
 
 		// delete first element of expectation
@@ -129,6 +134,46 @@ type parsedUpdateExpression struct {
 	DELETEExpressions []pathValueExpression
 	REMOVEExpressions []pathExpression
 	SETExpressions    []pathValueExpression
+}
+
+func (p *parsedUpdateExpression) CheckIsEquivalentTo(other *parsedUpdateExpression) error {
+	sort.Slice(p.ADDExpressions, func(i, j int) bool {
+		return p.ADDExpressions[i].path < p.ADDExpressions[j].path
+	})
+	sort.Slice(other.ADDExpressions, func(i, j int) bool {
+		return other.ADDExpressions[i].path < other.ADDExpressions[j].path
+	})
+	if !reflect.DeepEqual(p.ADDExpressions, other.ADDExpressions) {
+		return fmt.Errorf("ADDExpressions do not match, %v != %v", p.ADDExpressions, other.ADDExpressions)
+	}
+	sort.Slice(p.DELETEExpressions, func(i, j int) bool {
+		return p.DELETEExpressions[i].path < p.DELETEExpressions[j].path
+	})
+	sort.Slice(other.DELETEExpressions, func(i, j int) bool {
+		return other.DELETEExpressions[i].path < other.DELETEExpressions[j].path
+	})
+	if !reflect.DeepEqual(p.DELETEExpressions, other.DELETEExpressions) {
+		return fmt.Errorf("DELETEExpressions do not match, %v != %v", p.DELETEExpressions, other.DELETEExpressions)
+	}
+	sort.Slice(p.REMOVEExpressions, func(i, j int) bool {
+		return p.REMOVEExpressions[i].path < p.REMOVEExpressions[j].path
+	})
+	sort.Slice(other.REMOVEExpressions, func(i, j int) bool {
+		return other.REMOVEExpressions[i].path < other.REMOVEExpressions[j].path
+	})
+	if !reflect.DeepEqual(p.REMOVEExpressions, other.REMOVEExpressions) {
+		return fmt.Errorf("REMOVEExpressions do not match, %v != %v", p.REMOVEExpressions, other.REMOVEExpressions)
+	}
+	sort.Slice(p.SETExpressions, func(i, j int) bool {
+		return p.SETExpressions[i].path < p.SETExpressions[j].path
+	})
+	sort.Slice(other.SETExpressions, func(i, j int) bool {
+		return other.SETExpressions[i].path < other.SETExpressions[j].path
+	})
+	if !reflect.DeepEqual(p.SETExpressions, other.SETExpressions) {
+		return fmt.Errorf("SETExpressions do not match, %v != %v", p.SETExpressions, other.SETExpressions)
+	}
+	return nil
 }
 
 type operation string
@@ -314,6 +359,13 @@ func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.Up
 		if x.updateExpression != nil {
 			if !reflect.DeepEqual(x.updateExpression, input.UpdateExpression) {
 				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.updateExpression, input.UpdateExpression)
+			}
+		}
+		if x.equivalentUpdateExpression != nil {
+			inputExpr := parseUpdateExpression(*input.UpdateExpression)
+			err := x.equivalentUpdateExpression.CheckIsEquivalentTo(&inputExpr)
+			if err != nil {
+				return &dynamodb.UpdateItemOutput{}, fmt.Errorf("non-equivalent update expressions found: %v", err)
 			}
 		}
 		// delete first element of expectation
