@@ -1,10 +1,12 @@
+Forked from https://github.com/gusaul/go-dynamock
+
 [![GoDoc](https://godoc.org/github.com/gusaul/go-dynamock?status.png)](https://godoc.org/github.com/gusaul/go-dynamock) [![Go Report Card](https://goreportcard.com/badge/github.com/gusaul/go-dynamock)](https://goreportcard.com/report/github.com/gusaul/go-dynamock) [![Build Status](https://travis-ci.com/gusaul/go-dynamock.svg?branch=master)](https://travis-ci.com/gusaul/go-dynamock)
 # go-dynamock
 Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions
 
 ## Install
 ```
-go get github.com/gusaul/go-dynamock
+go get github.com/cgstag/go-dynamock
 ```
 
 ## Examples Usage
@@ -75,7 +77,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	dynamock "github.com/gusaul/go-dynamock"
+	dynamock "github.com/cgstag/go-dynamock"
 )
 
 var mock *dynamock.DynaMock
@@ -163,4 +165,4 @@ and will be treated cautiously
 
 ## License
 
-The [MIT License](https://github.com/gusaul/go-dynamock/blob/master/LICENSE)
+The [MIT License](https://github.com/cgstag/go-dynamock/blob/master/LICENSE)

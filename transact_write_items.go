@@ -40,9 +40,9 @@ func (e *MockDynamoDB) TransactWriteItems(input *dynamodb.TransactWriteItemsInpu
 		for i, item := range input.TransactItems {
 			// comapre table name for each write transact item with `x.table`
 			if x.table != nil {
-				if (item.Update != nil && x.table != item.Update.TableName) ||
-					(item.Put != nil && x.table != item.Put.TableName) ||
-					(item.Delete != nil && x.table != item.Delete.TableName) {
+				if (item.Update != nil && *x.table != *item.Update.TableName) ||
+					(item.Put != nil && *x.table != *item.Put.TableName) ||
+					(item.Delete != nil && *x.table != *item.Delete.TableName) {
 					return &dynamodb.TransactWriteItemsOutput{}, fmt.Errorf("Expect table %s not found", *x.table)
 				}
 			}
