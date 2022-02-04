@@ -1,6 +1,8 @@
 package dynamock
 
 import (
+	"sync"
+
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
@@ -10,6 +12,7 @@ type (
 	MockDynamoDB struct {
 		dynamodbiface.DynamoDBAPI
 		dynaMock *DynaMock
+		mutex    sync.Mutex
 	}
 
 	// DynaMock mock struct hold all expectation types
