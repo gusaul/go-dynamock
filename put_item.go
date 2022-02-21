@@ -21,6 +21,8 @@ func (e *PutItemExpectation) WithItems(item map[string]*dynamodb.AttributeValue)
 	return e
 }
 
+// WithShalowItems - method to set a shallow Items expectation
+// This will only compare the items in the expectation and not throw an error on missing items
 func (e *PutItemExpectation) WithShallowItems(item map[string]*dynamodb.AttributeValue) *PutItemExpectation {
 	e.shallowitem = item
 	return e
