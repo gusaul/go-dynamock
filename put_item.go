@@ -93,6 +93,22 @@ func (e *MockDynamoDB) PutItemWithContext(ctx aws.Context, input *dynamodb.PutIt
 			}
 		}
 
+		if x.shallowitem != nil {
+			mmLeft := make(map[string]*dynamodb.AttributeValue)
+			mmRight := make(map[string]*dynamodb.AttributeValue)
+
+			for k, v := range x.shallowitem {
+				if !reflect.DeepEqual(v, input.Item[k]) {
+					mmLeft[k] = v
+					mmRight[k] = input.Item[k]
+				}
+			}
+
+			if len(mmLeft) > 0 {
+				return &dynamodb.PutItemOutput{}, fmt.Errorf("Expect item %+v but found item %+v", mmLeft, mmRight)
+			}
+		}
+
 		// delete first element of expectation
 		e.dynaMock.PutItemExpect = append(e.dynaMock.PutItemExpect[:0], e.dynaMock.PutItemExpect[1:]...)
 
