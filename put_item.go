@@ -21,6 +21,13 @@ func (e *PutItemExpectation) WithItems(item map[string]*dynamodb.AttributeValue)
 	return e
 }
 
+// WithShalowItems - method to set a shallow Items expectation
+// This will only compare the items in the expectation and not throw an error on missing items
+func (e *PutItemExpectation) WithShallowItems(item map[string]*dynamodb.AttributeValue) *PutItemExpectation {
+	e.shallowitem = item
+	return e
+}
+
 // WillReturns - method for set desired result
 func (e *PutItemExpectation) WillReturns(res dynamodb.PutItemOutput) *PutItemExpectation {
 	e.output = &res
@@ -41,6 +48,22 @@ func (e *MockDynamoDB) PutItem(input *dynamodb.PutItemInput) (*dynamodb.PutItemO
 		if x.item != nil {
 			if !reflect.DeepEqual(x.item, input.Item) {
 				return &dynamodb.PutItemOutput{}, fmt.Errorf("Expect item %+v but found item %+v", x.item, input.Item)
+			}
+		}
+
+		if x.shallowitem != nil {
+			mmLeft := make(map[string]*dynamodb.AttributeValue)
+			mmRight := make(map[string]*dynamodb.AttributeValue)
+
+			for k, v := range x.shallowitem {
+				if !reflect.DeepEqual(v, input.Item[k]) {
+					mmLeft[k] = v
+					mmRight[k] = input.Item[k]
+				}
+			}
+
+			if len(mmLeft) > 0 {
+				return &dynamodb.PutItemOutput{}, fmt.Errorf("Expect item %+v but found item %+v", mmLeft, mmRight)
 			}
 		}
 
@@ -67,6 +90,22 @@ func (e *MockDynamoDB) PutItemWithContext(ctx aws.Context, input *dynamodb.PutIt
 		if x.item != nil {
 			if !reflect.DeepEqual(x.item, input.Item) {
 				return &dynamodb.PutItemOutput{}, fmt.Errorf("Expect item %+v but found item %+v", x.item, input.Item)
+			}
+		}
+
+		if x.shallowitem != nil {
+			mmLeft := make(map[string]*dynamodb.AttributeValue)
+			mmRight := make(map[string]*dynamodb.AttributeValue)
+
+			for k, v := range x.shallowitem {
+				if !reflect.DeepEqual(v, input.Item[k]) {
+					mmLeft[k] = v
+					mmRight[k] = input.Item[k]
+				}
+			}
+
+			if len(mmLeft) > 0 {
+				return &dynamodb.PutItemOutput{}, fmt.Errorf("Expect item %+v but found item %+v", mmLeft, mmRight)
 			}
 		}
 
