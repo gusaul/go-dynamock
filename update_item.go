@@ -112,6 +112,12 @@ func (e *MockDynamoDB) UpdateItemWithContext(ctx aws.Context, input *dynamodb.Up
 			}
 		}
 
+		if x.exprAttrValues != nil {
+			if !reflect.DeepEqual(x.exprAttrValues, input.ExpressionAttributeValues) {
+				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.exprAttrValues, input.ExpressionAttributeValues)
+			}
+		}
+
 		// delete first element of expectation
 		e.dynaMock.UpdateItemExpect = append(e.dynaMock.UpdateItemExpect[:0], e.dynaMock.UpdateItemExpect[1:]...)
 
