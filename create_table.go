@@ -32,13 +32,13 @@ func (e *MockDynamoDB) CreateTable(input *dynamodb.CreateTableInput) (*dynamodb.
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.CreateTableOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.keySchema != nil {
 			if !reflect.DeepEqual(x.keySchema, input.KeySchema) {
-				return nil, fmt.Errorf("Expect keySchema %+v but found keySchema %+v", x.keySchema, input.KeySchema)
+				return &dynamodb.CreateTableOutput{}, fmt.Errorf("Expect keySchema %+v but found keySchema %+v", x.keySchema, input.KeySchema)
 			}
 		}
 
@@ -48,5 +48,5 @@ func (e *MockDynamoDB) CreateTable(input *dynamodb.CreateTableInput) (*dynamodb.
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Create Table Expectation Not Found")
+	return &dynamodb.CreateTableOutput{}, fmt.Errorf("Create Table Expectation Not Found")
 }
