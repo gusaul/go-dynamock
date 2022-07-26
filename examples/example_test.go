@@ -1,8 +1,9 @@
 package examples
 
 import (
-	dynamock "github.com/gusaul/go-dynamock"
 	"testing"
+
+	dynamock "github.com/Enflick/go-dynamock"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
