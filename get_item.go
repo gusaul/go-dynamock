@@ -34,13 +34,13 @@ func (e *MockDynamoDB) GetItem(input *dynamodb.GetItemInput) (*dynamodb.GetItemO
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.GetItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.GetItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
@@ -50,7 +50,7 @@ func (e *MockDynamoDB) GetItem(input *dynamodb.GetItemInput) (*dynamodb.GetItemO
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Get Item Expectation Not Found")
+	return &dynamodb.GetItemOutput{}, fmt.Errorf("Get Item Expectation Not Found")
 }
 
 // GetItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -60,13 +60,13 @@ func (e *MockDynamoDB) GetItemWithContext(ctx aws.Context, input *dynamodb.GetIt
 
 		if x.table != nil {
 			if *x.table != *input.TableName {
-				return nil, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+				return &dynamodb.GetItemOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
 
 		if x.key != nil {
 			if !reflect.DeepEqual(x.key, input.Key) {
-				return nil, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
+				return &dynamodb.GetItemOutput{}, fmt.Errorf("Expect key %+v but found key %+v", x.key, input.Key)
 			}
 		}
 
@@ -76,5 +76,5 @@ func (e *MockDynamoDB) GetItemWithContext(ctx aws.Context, input *dynamodb.GetIt
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Get Item With Context Expectation Not Found")
+	return &dynamodb.GetItemOutput{}, fmt.Errorf("Get Item With Context Expectation Not Found")
 }

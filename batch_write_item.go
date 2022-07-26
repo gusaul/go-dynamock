@@ -24,21 +24,17 @@ func (e *BatchWriteItemExpectation) WillReturns(res dynamodb.BatchWriteItemOutpu
 // BatchWriteItem - this func will be invoked when test running matching expectation with actual input
 func (e *MockDynamoDB) BatchWriteItem(input *dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error) {
 	if len(e.dynaMock.BatchWriteItemExpect) > 0 {
-		x := e.dynaMock.BatchWriteItemExpect[0] //get first element of expectation
-
-		if x.input != nil {
-			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+		for i, x := range e.dynaMock.BatchWriteItemExpect {
+			if x.input != nil {
+				if reflect.DeepEqual(x.input, input.RequestItems) {
+					e.dynaMock.BatchWriteItemExpect = append(e.dynaMock.BatchWriteItemExpect[:i], e.dynaMock.BatchWriteItemExpect[i:]...)
+					return x.output, nil
+				}
 			}
 		}
-
-		// delete first element of expectation
-		e.dynaMock.BatchWriteItemExpect = append(e.dynaMock.BatchWriteItemExpect[:0], e.dynaMock.BatchWriteItemExpect[1:]...)
-
-		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Batch Write Item Expectation Not Found")
+	return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Batch Write Item Expectation Failed. Expected one of %+v to equal %+v", e.dynaMock.BatchWriteItemExpect, input.RequestItems)
 }
 
 // BatchWriteItemWithContext - this func will be invoked when test running matching expectation with actual input
@@ -48,7 +44,7 @@ func (e *MockDynamoDB) BatchWriteItemWithContext(ctx aws.Context, input *dynamod
 
 		if x.input != nil {
 			if !reflect.DeepEqual(x.input, input.RequestItems) {
-				return nil, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
+				return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Expect input %+v but found input %+v", x.input, input.RequestItems)
 			}
 		}
 
@@ -58,5 +54,5 @@ func (e *MockDynamoDB) BatchWriteItemWithContext(ctx aws.Context, input *dynamod
 		return x.output, nil
 	}
 
-	return nil, fmt.Errorf("Batch Write Item Expectation Not Found")
+	return &dynamodb.BatchWriteItemOutput{}, fmt.Errorf("Batch Write Item Expectation Not Found")
 }
